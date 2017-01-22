@@ -5,6 +5,9 @@ Created on Sat Jan 21 12:45:05 2017
 @author: Ryan Kim
 """
 
+# defining a global variable
+happiness_dictionary = {}
+
 def mytype(theInput):
     import re
 
@@ -20,13 +23,13 @@ def mytype(theInput):
     # otherwise, the input should be a string
     else: 
         return '<class \'string\'>'
-
+    
 def findpdfs(fileList):
     import re
     outputList = []
-    for i in range(len(fileList)):
+    for file in fileList:
         # note to self, check for illegal special characters using (?!...)
-        match = re.match(r'(^(?!\\)(?!\n).+)[\.]{1}(pdf|PDF)$',fileList[i])
+        match = re.match(r'(^(?!\\)(?!\n)(?!\/).+)[\.]{1}(pdf|PDF)$', file)
         if match is not None:
             outputList.append(str(match.group(1)))
     return outputList
@@ -42,8 +45,23 @@ def names(inputName):
     else:
         print('Input Not Valid')
         return
+    
+def happiness(englishText):
+    import re
+    fid = open('/home/ryan/Documents/PIC16/happiness_dictionary.txt','r')
+    txt = fid.read()
+    exec(txt, globals())
+    
+    numMatchedWordsInDict = 0
+    rawHappinessScore = 0
+    p = re.compile('([A-Za-z]+)[\s-]?')
+    matches = p.findall(englishText)
+    
+    for match in matches:
+        if match.lower() in happiness_dictionary:
+            numMatchedWordsInDict+=1
+            rawHappinessScore+=happiness_dictionary[match.lower()]
+            #print(match.lower(),happiness_dictionary[match.lower()], rawHappinessScore, numMatchedWordsInDict, 'current Average:', rawHappinessScore / numMatchedWordsInDict)
             
-            
+    return (rawHappinessScore / numMatchedWordsInDict)
         
-
-
