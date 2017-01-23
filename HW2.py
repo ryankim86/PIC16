@@ -12,7 +12,7 @@ def mytype(theInput):
     import re
 
     # check if list by seeing if the first and last characters are [ and ], respectively
-    if re.search(r'^\[{1}.+\]{1}$', str(theInput)) is not None:
+    if re.search(r'^\[{1}.*\]{1}$', str(theInput)) is not None:
         return '<class \'list\'>'        
     # check if integer by seeing if it is a string of digits with no .
     elif re.search(r'^\d+(?!\.)$', str(theInput)) is not None:
@@ -45,7 +45,35 @@ def names(inputName):
     else:
         print('Input Not Valid')
         return
+        
+def findemail(url):
+    import re
+    import urllib.request
+    #(\.| dot | dot| _dot_ | \[dot\] )
+    txt = str(urllib.request.urlopen(url).read())
+    matches = re.findall(r'([A-Za-z0-9\.\-+_]+[ ]?)(@|at | at | _at_ | \[at\] )([A-Za-z0-9\.\-+_ ]+)(\.| dot | _dot_ | \[dot\] )([A-Za-z]+)', txt)
     
+    #([A-Za-z0-9\.\-+_]+)\.([A-Za-z]+)', txt)
+
+    if len(matches) is 0:
+        print('No emails found on this page')
+        return
+    
+    ret = ''
+    for match in matches[0]:
+        print (match)
+        piece = match.replace(' ', '')
+        if piece == 'at' or piece == '_at_' or piece == '[at]':
+            piece = '@'
+        elif piece  == 'dot' or piece  == '_dot_' or piece == '[dot]':
+            piece = '.'
+                
+
+        ret+=piece
+    print(ret)
+        
+    
+
 def happiness(englishText):
     import re
     fid = open('/home/ryan/Documents/PIC16/happiness_dictionary.txt','r')
@@ -61,7 +89,6 @@ def happiness(englishText):
         if match.lower() in happiness_dictionary:
             numMatchedWordsInDict+=1
             rawHappinessScore+=happiness_dictionary[match.lower()]
-            #print(match.lower(),happiness_dictionary[match.lower()], rawHappinessScore, numMatchedWordsInDict, 'current Average:', rawHappinessScore / numMatchedWordsInDict)
             
     return (rawHappinessScore / numMatchedWordsInDict)
         
