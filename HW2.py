@@ -5,9 +5,6 @@ Created on Sat Jan 21 12:45:05 2017
 @author: Ryan Kim
 """
 
-# defining a global variable
-happiness_dictionary = {}
-
 def mytype(theInput):
     import re
 
@@ -49,30 +46,40 @@ def names(inputName):
 def findemail(url):
     import re
     import urllib.request
-    #(\.| dot | dot| _dot_ | \[dot\] )
+    #txt = 'cmarshak [at] math [dot] ucla [dot] edu [dot] mex [dot] hi'
     txt = str(urllib.request.urlopen(url).read())
-    matches = re.findall(r'([A-Za-z0-9\.\-+_]+[ ]?)(@|at | at | _at_ | \[at\] )([A-Za-z0-9\.\-+_ ]+)(\.| dot | _dot_ | \[dot\] )([A-Za-z]+)', txt)
+    # grab fairly simple emails (or incomplete complex ones)
+    shortMatch = re.findall(r'([A-Za-z0-9\.\-+_]+[ ]?)(@|at | at | _at_ | \[at\] | \[\<i\>at\<\/i\>\] )([A-Za-z0-9\.\-+_ ]+)(\.| dot | dot| _dot_ | \[dot\] | \[\<i\>dot<\/i>\] )([A-Za-z]+)', txt)
     
-    #([A-Za-z0-9\.\-+_]+)\.([A-Za-z]+)', txt)
+    # complex email (i.e. more than 1 'dot' in the domain name)
+    longMatch = re.findall(r'([A-Za-z0-9\.\-+_]+[ ]?)(@|at | at | _at_ | \[at\] | \[\<i\>at\<\/i\>\] )([A-Za-z0-9\.\-+_ ]+)(?:(\.| dot | dot| _dot_ | \[dot\] | \[\<i\>dot<\/i>\] )([A-Za-z]+))+(\.| dot | dot| _dot_ | \[dot\] | \[\<i\>dot\<\/i\>\] )([A-Za-z]+)', txt)
 
-    if len(matches) is 0:
+    if len(longMatch) is 0 and len(shortMatch) is 0:
         print('No emails found on this page')
         return
-    
-    ret = ''
+    else:
+        if len(longMatch) is 0:
+            matches = shortMatch
+        elif len(shortMatch) is 0:
+            matches = longMatch
+        else:
+            matches = longMatch if len(longMatch[0]) > len(shortMatch[0])  else shortMatch
+        
+    returnEmail = ''
     for match in matches[0]:
         print (match)
         piece = match.replace(' ', '')
-        if piece == 'at' or piece == '_at_' or piece == '[at]':
+        if piece == 'at' or piece == '_at_' or piece == '[at]' or piece == '[<i>at</i>]':
             piece = '@'
-        elif piece  == 'dot' or piece  == '_dot_' or piece == '[dot]':
+        elif piece  == 'dot' or piece  == '_dot_' or piece == '[dot]' or piece == '[<i>dot</i>]':
             piece = '.'
                 
 
-        ret+=piece
-    print(ret)
+        returnEmail+=piece
+    print(returnEmail)
         
-    
+# defining a global variable
+happiness_dictionary = {}
 
 def happiness(englishText):
     import re
