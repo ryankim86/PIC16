@@ -46,14 +46,17 @@ def names(inputName):
 def findemail(url):
     import re
     import urllib.request
-    #txt = 'cmarshak [at] math [dot] ucla [dot] edu [dot] mex [dot] hi'
-    txt = str(urllib.request.urlopen(url).read())
+
+    #txt = str(urllib.request.urlopen(url).read())
+    txt = 'cmarshak [at] math [dot] ucla [dot] edu [dot] te'
+    
     # grab fairly simple emails (or incomplete complex ones)
     shortMatch = re.findall(r'([A-Za-z0-9\.\-+_]+[ ]?)(@|at | at | _at_ | \[at\] | \[\<i\>at\<\/i\>\] )([A-Za-z0-9\.\-+_ ]+)(\.| dot | dot| _dot_ | \[dot\] | \[\<i\>dot<\/i>\] )([A-Za-z]+)', txt)
     
     # complex email (i.e. more than 1 'dot' in the domain name)
-    longMatch = re.findall(r'([A-Za-z0-9\.\-+_]+[ ]?)(@|at | at | _at_ | \[at\] | \[\<i\>at\<\/i\>\] )([A-Za-z0-9\.\-+_ ]+)(?:(\.| dot | dot| _dot_ | \[dot\] | \[\<i\>dot<\/i>\] )([A-Za-z]+))+(\.| dot | dot| _dot_ | \[dot\] | \[\<i\>dot\<\/i\>\] )([A-Za-z]+)', txt)
+    longMatch = re.findall(r'([A-Za-z0-9\.\-+_]+[ ]?)(@|at | at | _at_ | \[at\] | \[\<i\>at\<\/i\>\] )([A-Za-z0-9\.\-+_ ]+(?:\.| dot | dot| _dot_ | \[dot\] | \[\<i\>dot<\/i>\] )(?:[A-Za-z]+))$', txt)
 
+    
     if len(longMatch) is 0 and len(shortMatch) is 0:
         print('No emails found on this page')
         return
@@ -67,16 +70,14 @@ def findemail(url):
         
     returnEmail = ''
     for match in matches[0]:
-        print (match)
         piece = match.replace(' ', '')
         if piece == 'at' or piece == '_at_' or piece == '[at]' or piece == '[<i>at</i>]':
             piece = '@'
         elif piece  == 'dot' or piece  == '_dot_' or piece == '[dot]' or piece == '[<i>dot</i>]':
             piece = '.'
-                
-
         returnEmail+=piece
-    print(returnEmail)
+
+    return returnEmail
         
 # defining a global variable
 happiness_dictionary = {}
