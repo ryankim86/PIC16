@@ -99,7 +99,6 @@ def network():
             x[i] = i
         else:
             x[i] = i - 45
-        #x[i]=np.cos(2*np.pi*i/90) * 5
     for i in range(90):	
         if i <= 45:
             y[i] = 30
@@ -122,4 +121,36 @@ def network():
     plt.plot(x,y,'o', color = 'gold', markersize = 5)
     
     return
+
+
+
+def turtleFractal(order, length):
+    import turtle as turt
     
+    # set speed so drawing doesn't get pedantic
+    turt.speed('fastest')
+
+    # base case, draw a triangle
+    if order == 0:
+        for i in range(3):
+            turt.forward(length)
+            turt.left(120)
+    # otherwise, recursively call for three smaller triangles to be made
+    else:        
+        # create left corner triangle
+        turtleFractal(order - 1, length / 2)
+        
+        # move over to create right corner triangle
+        turt.forward(length / 2)
+        turtleFractal(order - 1, length / 2)
+        
+        # move over to create top triangle
+        turt.left(120)
+        turt.forward(length / 2)
+        turt.right(120)
+        turtleFractal(order - 1, length / 2)
+        
+        # return to original position
+        turt.right(120)
+        turt.forward(length / 2)
+        turt.left(120)
