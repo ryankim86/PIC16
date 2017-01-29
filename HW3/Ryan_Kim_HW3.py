@@ -10,7 +10,7 @@ def scatterPlot():
     import matplotlib.pyplot as plt
     import pandas as pd
     
-    # grab win data by team for years after 2000. Data is from Lahman's Baseball Database
+    # grab win data by team for 2012. Data is from Lahman's Baseball Database
     teams = pd.read_csv('Teams.csv')
     teams = teams[teams['yearID'] == 2012]
     teams = teams[['teamID', 'W']]
@@ -20,7 +20,7 @@ def scatterPlot():
     
     playerSalaries = pd.read_csv('Salaries.csv')
     
-    # add up player salaries
+    # average player salaries
     salariesByTeam = playerSalaries[playerSalaries['yearID'] == 2012]
     salariesByTeam = salariesByTeam.groupby(['teamID'])['salary'].mean()
 
@@ -71,12 +71,10 @@ Using Data from https://snap.stanford.edu/data/email-Eu-core.html
 Which is a dataset that represents communication between members of a large European research institution via email
 Data contains entries of sender, recepient, timestamp
 """
-#TODO: Make this entire process more efficient. Find a better way to organize nodes (maybe). Add directness. Find way to isolate nodes with no emails sent.
-# or instead of directed, just aggregate total emails.
+#TODO: Make this process by using only aggregate emails so less iteration has to happen when plotting (maybe)
 def network():
     import numpy as np
     import matplotlib.pyplot as plt
-    
     
     # we know that the network has 90 nodes
     emailNetworkMatrix = np.zeros([90,90])
@@ -91,39 +89,50 @@ def network():
             """
             emailNetworkMatrix[int(emailers[0])][int(emailers[1])] +=1
     
-    x=[i for i in range(90)]
-    y=[i for i in range(90)]
+    # create nodes
+    x = []
+    y = []
 
     for i in range(90):	
         if i <= 45:
-            x[i] = i
+            x.append(i)
+            y.append(30)
         else:
-            x[i] = i - 45
-    for i in range(90):	
-        if i <= 45:
-            y[i] = 30
-        else:
-            y[i] = 60
-        
+            x.append(i - 45)
+            y.append(60)
+            
+    # set up plot
     plt.ylim([-10,110])
     plt.xlim([-5,50])
+    plt.title('Email Communication in a Euro Research Institution')
+    plt.tick_params(
+        axis = 'both',
+        which = 'both',
+        left = 'off',
+        labelleft = 'off',
+        right = 'off',
+        bottom = 'off',
+        top = 'off',
+        labelbottom ='off'
+    )
     
+    # shuffle the y values a little
     for i in range(90):
         for j in range(90):
             if emailNetworkMatrix[i][j] is not 0:
                 if y[i] == y[j]:
-                    y[j] += np.random.random_integers(-15, 15)
+                    y[j] += np.random.random_integers(-1,1)*np.random.random() * 15
     
     for i in range(90):
         for j in range(90):
             plt.plot([x[i],x[j]], [y[i], y[j]], linewidth = emailNetworkMatrix[i][j] / 30, linestyle = '-', color = 'cyan')
+        plt.annotate(str(i), (x[i], y[i]), xytext = (x[i]+0.25,y[i]+0.25))
             
-    plt.plot(x,y,'o', color = 'gold', markersize = 5)
+    plt.plot(x,y,'o', color = 'gold', markersize = 11)
     
     return
 
-
-
+# creates Sierpinski's Triangle
 def turtleFractal(order, length):
     import turtle as turt
     
