@@ -13,21 +13,23 @@ def scatterPlot():
     # grab win data by team for years after 2000. Data is from Lahman's Baseball Database
     teams = pd.read_csv('Teams.csv')
     teams = teams[teams['yearID'] == 2012]
-    teams = teams[['yearID', 'teamID', 'W']]
+    #teams = teams[['yearID', 'teamID', 'W']]
+    teams = teams[['teamID', 'W']]
     
     # set index for easier look up
-    teams = teams.set_index(['yearID', 'teamID'])
+    teams = teams.set_index(['teamID'])
     
     playerSalaries = pd.read_csv('Salaries.csv')
     
     # add up player salaries
-    salariesByYearAndTeam = playerSalaries.groupby(['yearID', 'teamID'])['salary'].mean()
+    salariesByTeam = playerSalaries[playerSalaries['yearID'] == 2012]
+    salariesByTeam = salariesByTeam.groupby(['teamID'])['salary'].mean()
 
     # add summed salaries to team data
-    teams = teams.join(salariesByYearAndTeam)    
+    teams = teams.join(salariesByTeam)    
     
     # plot wins
-    plt.plot(teams['salary'][2012], teams['W'][2012], 'o')
+    plt.plot(teams['salary'], teams['W'], 'o')
     
     # adjust plot settings
     plt.ylim([50,100])
@@ -39,5 +41,14 @@ def scatterPlot():
     return
 
 def histogram():
+    import matplotlib.pyplot as plt
+    import pandas as pd
     
+    plt.title('Some Histogram')
+    plt.xlabel('Something')
+    plt.ylabel('Some Frequency')
+    plt.grid(True)
+    plt.show()
+    
+    return
     
