@@ -13,7 +13,6 @@ def scatterPlot():
     # grab win data by team for years after 2000. Data is from Lahman's Baseball Database
     teams = pd.read_csv('Teams.csv')
     teams = teams[teams['yearID'] == 2012]
-    #teams = teams[['yearID', 'teamID', 'W']]
     teams = teams[['teamID', 'W']]
     
     # set index for easier look up
@@ -44,9 +43,24 @@ def histogram():
     import matplotlib.pyplot as plt
     import pandas as pd
     
-    plt.title('Some Histogram')
-    plt.xlabel('Something')
-    plt.ylabel('Some Frequency')
+    battingData = pd.read_csv('Batting.csv')
+
+    battingData = battingData[battingData['yearID'] == 2012]
+    
+    # some rows do not have run data, so only take ones with finite values 
+    battingData = battingData['R']
+
+    # plot histogram
+    bins = plt.hist(battingData, bins= 13, range = [0, battingData.max()], color = ['crimson'])
+    
+    # extract values to create a curve following histogram bins
+    binValue = bins[0]
+    binCenters = .5 * (bins[1][1:]+bins[1][:-1])
+    plt.plot(binCenters, binValue, linewidth = 2, linestyle = '--', color = 'cyan')
+    
+    plt.title('Player Runs (2012)')
+    plt.xlabel('Number of Runs')
+    plt.ylabel('Number of Players (Frequency)')
     plt.grid(True)
     plt.show()
     
