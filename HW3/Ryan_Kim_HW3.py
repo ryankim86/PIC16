@@ -65,4 +65,61 @@ def histogram():
     plt.show()
     
     return
+
+"""
+Using Data from https://snap.stanford.edu/data/email-Eu-core.html
+Which is a dataset that represents communication between members of a large European research institution via email
+Data contains entries of sender, recepient, timestamp
+"""
+#TODO: Make this entire process more efficient. Find a better way to organize nodes (maybe). Add directness. Find way to isolate nodes with no emails sent.
+# or instead of directed, just aggregate total emails.
+def network():
+    import numpy as np
+    import matplotlib.pyplot as plt
+    
+    
+    # we know that the network has 90 nodes
+    emailNetworkMatrix = np.zeros([90,90])
+    
+    # matrix will be such that entry i,j will hold the number of emails from person i to person j
+    with open('email-Eu-core-Dept3.txt') as input_file:
+        for line in input_file:
+            emailers = line.split()
+            """ 
+            using the fact that the participants are given ID numbers that are integers,
+            increment the value of entry i,j when person i sent an email to person j           
+            """
+            emailNetworkMatrix[int(emailers[0])][int(emailers[1])] +=1
+    
+    x=[i for i in range(90)]
+    y=[i for i in range(90)]
+
+    for i in range(90):	
+        if i <= 45:
+            x[i] = i
+        else:
+            x[i] = i - 45
+        #x[i]=np.cos(2*np.pi*i/90) * 5
+    for i in range(90):	
+        if i <= 45:
+            y[i] = 30
+        else:
+            y[i] = 60
+        
+    plt.ylim([-10,110])
+    plt.xlim([-5,50])
+    
+    for i in range(90):
+        for j in range(90):
+            if emailNetworkMatrix[i][j] is not 0:
+                if y[i] == y[j]:
+                    y[j] += np.random.random_integers(-15, 15)
+    
+    for i in range(90):
+        for j in range(90):
+            plt.plot([x[i],x[j]], [y[i], y[j]], linewidth = emailNetworkMatrix[i][j] / 30, linestyle = '-', color = 'cyan')
+            
+    plt.plot(x,y,'o', color = 'gold', markersize = 5)
+    
+    return
     
