@@ -5,6 +5,7 @@ Created on Sat Jan 28 22:31:31 2017
 @author: Ryan Kim
 """
 
+# begin Problem 1
 
 def scatterPlot():
     import matplotlib.pyplot as plt
@@ -65,6 +66,10 @@ def histogram():
     plt.show()
     
     return
+    
+# end Problem 1
+
+# begin Problem 2
 
 """
 Using Data from https://snap.stanford.edu/data/email-Eu-core.html
@@ -123,6 +128,7 @@ def network():
                 if y[i] == y[j]:
                     y[j] += np.random.random_integers(-1,1)*np.random.random() * 15
     
+    # plot everything
     for i in range(90):
         for j in range(90):
             plt.plot([x[i],x[j]], [y[i], y[j]], linewidth = emailNetworkMatrix[i][j] / 30, linestyle = '-', color = 'cyan')
@@ -131,6 +137,10 @@ def network():
     plt.plot(x,y,'o', color = 'gold', markersize = 11)
     
     return
+
+# end Problem 2
+
+# begin Problem 3
 
 # creates Sierpinski's Triangle
 def turtleFractal(order, length):
@@ -163,3 +173,54 @@ def turtleFractal(order, length):
         turt.right(120)
         turt.forward(length / 2)
         turt.left(120)
+
+# end Problem 3
+
+# begin Problem 4
+def prettyColors():
+    import matplotlib.pyplot as plt
+    
+    # create 256 x 128 grid
+    clrs = [[[0,0,0] for j in range(128)] for _ in range(256)]
+    
+    # red
+    for i in range(32):
+        for j in range(4):
+            for k in range(256):
+                clrs[k][i*4+j][0]=i/31.0
+            
+    # green
+    for i in range(32):
+        for j in range(8):
+            for k in range(128):
+                clrs[i*8+j][k][1]=i/31.0
+    # blue 
+    blue = [[0,1,2,3], 
+            [4,5,6,7],
+            [8,9,10,11],
+            [12,13,14,15],
+            [16,17,18,19],
+            [20,21,22,23],
+            [24,25,26,27],
+            [28,29,30,31]]
+        
+    for i in range(256):
+        for j in range(128):
+            clrs[i][j][2] = blue[i%8][j%4] / 31.0
+                
+    # set up plot
+    plt.tick_params(
+        axis = 'both',
+        which = 'both',
+        left = 'off',
+        labelleft = 'off',
+        right = 'off',
+        bottom = 'off',
+        top = 'off',
+        labelbottom ='off'
+    )
+    
+    # display
+    plt.imshow(clrs)
+    return
+# end Problem 4
