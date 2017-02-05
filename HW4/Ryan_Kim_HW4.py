@@ -69,8 +69,6 @@ def story_arc(story):
     rawHappinessScore = 0
     averagedScore = 0
     xCounter = 0
-    scoreFloor = 9
-    scoreCeiling = 0
     
     # A point will be 200 words. This value can be changed, and the rest of the code should adjust
     wordsPerBlock = 200
@@ -94,12 +92,6 @@ def story_arc(story):
                 else:
                     averagedScore = (rawHappinessScore + prev25RawScore) / (1.50*wordsPerBlock)
                     
-                # adjust plot y-range if necessary
-                if averagedScore < scoreFloor:
-                    scoreFloor = averagedScore
-                if averagedScore > scoreCeiling:
-                    scoreCeiling = averagedScore
-
                 rawHappinessScore = 0
                 prev25RawScore = 0
                 
@@ -122,7 +114,7 @@ def story_arc(story):
     # plot
     plt.xlim([-50, xCounter + 50])
     plt.title('Story Happiness Arc')
-    plt.ylim([int(scoreFloor),int(scoreCeiling)+1])
+    plt.ylim([int(min(y)),int(max(y))+1])
     plt.xlabel('Words in Blocks of ' + str(wordsPerBlock))
     plt.ylabel('Happiness Score')
     plt.plot(x,y, '-')
