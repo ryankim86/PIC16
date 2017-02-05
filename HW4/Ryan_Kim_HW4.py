@@ -52,7 +52,15 @@ happiness_dictionary = {}
 fid = open('/home/ryan/Documents/PIC16/HW4/GulTravel.txt','r')
 Rtxt = fid.read()
 
+"""
+Challenge 1: will plot the happiness arc of a story. A single point consists of the average score of 200 words.
+This quantity can be changed by adjusting the 'wordsPerBlock' variable in function body.
+@param story: A story in string format
+"""
 def story_arc(story):
+    
+    # A point will be 200 words. This value can be changed, and the rest of the code should adjust
+    wordsPerBlock = 200
     
     # open the happiness dictionary
     fid = open('/home/ryan/Documents/PIC16/happiness_dictionary.txt','r')
@@ -69,9 +77,6 @@ def story_arc(story):
     rawHappinessScore = 0
     averagedScore = 0
     xCounter = 0
-    
-    # A point will be 200 words. This value can be changed, and the rest of the code should adjust
-    wordsPerBlock = 200
     
     # Lists for plotting
     x = []
@@ -118,6 +123,7 @@ def story_arc(story):
     plt.xlabel('Words in Blocks of ' + str(wordsPerBlock))
     plt.ylabel('Happiness Score')
     plt.plot(x,y, '-')
+    return
     
 """
 Helper Function used for both Challenge 2 and 3
