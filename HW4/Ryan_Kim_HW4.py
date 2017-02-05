@@ -70,12 +70,15 @@ def story_arc(story):
     plt.ylim([4,6])
     plt.plot(x,y, '-')
     
-def pagerank(networkMatrix):
+    
+def pagerank(networkMatrix): 
     
     # create transition matrix
+    networkMatrix = np.array(networkMatrix, dtype = 'double')
     for i in range(len(networkMatrix)):
         columnSum = np.sum(networkMatrix[:,i])
         networkMatrix[:,i]/=columnSum
+
     
     # calculate eigenvectors and values
     eigVals, eigVecs = np.linalg.eig(networkMatrix)
@@ -83,7 +86,12 @@ def pagerank(networkMatrix):
     # find the value of the eigen value equal to 1 using the fact 1 is the greatest value
     eigValIndex = np.argmax(eigVals)
     
+    # extract column containing the eigenvector we want
     vector = eigVecs[:,eigValIndex]
+    
+    # calculate eigenvector scale constant as 1/sum of the vector components so that our Probability Distriubtion is correct
+    vector /= np.sum(eigVecs[:,eigValIndex])
+    
     tupleList = []   
     vectorRank = []
     
