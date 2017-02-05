@@ -49,7 +49,7 @@ Zachary_network=[
 # defining a global variable
 happiness_dictionary = {}
 
-fid = open('/home/ryan/Documents/PIC16/HW4/hisLittleWorld.txt','r')
+fid = open('/home/ryan/Documents/PIC16/HW4/GulTravel.txt','r')
 Rtxt = fid.read()
 
 def story_arc(story):
@@ -65,10 +65,15 @@ def story_arc(story):
 
     # counters
     numMatchedWordsInDict = 0
-    prevRawScore = 0
+    prev25RawScore = 0
     rawHappinessScore = 0
     averagedScore = 0
     xCounter = 0
+    scoreFloor = 9
+    scoreCeiling = 0
+    
+    # A point will be 200 words. This value can be changed, and the rest of the code should adjust
+    wordsPerBlock = 200
     
     # Lists for plotting
     x = []
@@ -80,20 +85,23 @@ def story_arc(story):
         if match.lower() in happiness_dictionary:
             numMatchedWordsInDict+=1
             
-            # if we have the sum of the happiness score of 50 words, then average to create point
-            if numMatchedWordsInDict == 50:
+            if numMatchedWordsInDict == wordsPerBlock:
                 
                 # if it is the first 50 words, then normal average
-                if prevRawScore == 0:
+                if prev25RawScore == 0:
                     averagedScore = rawHappinessScore / numMatchedWordsInDict
-                    prevRawScore = rawHappinessScore
                 # otherwise, average with last score so points are more continuous
                 else:
-                    averagedScore = (rawHappinessScore + prevRawScore) / (2*numMatchedWordsInDict)
-                    prevRawScore = rawHappinessScore
-                    rawHappinessScore = 0
-                
-                print(averagedScore)
+                    averagedScore = (rawHappinessScore + prev25RawScore) / (1.50*wordsPerBlock)
+                    
+                # adjust plot y-range if necessary
+                if averagedScore < scoreFloor:
+                    scoreFloor = averagedScore
+                if averagedScore > scoreCeiling:
+                    scoreCeiling = averagedScore
+
+                rawHappinessScore = 0
+                prev25RawScore = 0
                 
                 #add points
                 x.append(xCounter)
@@ -103,12 +111,20 @@ def story_arc(story):
                 numMatchedWordsInDict = 0
                 xCounter += 1
                 
+            # keep track of the score of the last half of the previous block
+            elif numMatchedWordsInDict >= (wordsPerBlock / 2):
+                rawHappinessScore += happiness_dictionary[match.lower()]
+                prev25RawScore += happiness_dictionary[match.lower()]
+                
             # otherwise add word's happiness score to a running total
             else:
                 rawHappinessScore+=happiness_dictionary[match.lower()]
     # plot
     plt.xlim([-50, xCounter + 50])
-    plt.ylim([4,9])
+    plt.title('Story Happiness Arc')
+    plt.ylim([int(scoreFloor),int(scoreCeiling)+1])
+    plt.xlabel('Words in Blocks of ' + str(wordsPerBlock))
+    plt.ylabel('Happiness Score')
     plt.plot(x,y, '-')
     
 """
