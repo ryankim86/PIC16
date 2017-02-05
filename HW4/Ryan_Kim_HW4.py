@@ -70,28 +70,12 @@ def story_arc(story):
     plt.ylim([4,6])
     plt.plot(x,y, '-')
     
-    
-def pagerank(networkMatrix): 
-    
-    # create transition matrix
-    networkMatrix = np.array(networkMatrix, dtype = 'double')
-    for i in range(len(networkMatrix)):
-        columnSum = np.sum(networkMatrix[:,i])
-        networkMatrix[:,i]/=columnSum
-
-    
-    # calculate eigenvectors and values
-    eigVals, eigVecs = np.linalg.eig(networkMatrix)
-
-    # find the value of the eigen value equal to 1 using the fact 1 is the greatest value
-    eigValIndex = np.argmax(eigVals)
-    
-    # extract column containing the eigenvector we want
-    vector = eigVecs[:,eigValIndex]
-    
-    # calculate eigenvector scale constant as 1/sum of the vector components so that our Probability Distriubtion is correct
-    vector /= np.sum(eigVecs[:,eigValIndex])
-    
+"""
+Helper Function used for both Challenge 2 and 3
+@param vector: a vector
+@return rankVector: another vector of indices in order of nonincreasing rank
+"""
+def createIndexVector(vector):
     tupleList = []   
     vectorRank = []
     
@@ -106,9 +90,46 @@ def pagerank(networkMatrix):
     for i in range(len(tupleList)):
         vectorRank.append(tupleList[i][1])
     
-    # return the eigenvector the list converted into a numpy array
-    return vector, np.array(vectorRank)
+    return np.array(vectorRank)
 
+"""
+Challange 2
+@param networkMatrix: A network in matrix form. Can be either a numpy array or a List of Lists
+@return : scoreVector: score vector of the network
+@return : rankVector: vector of indices of scoreVector in nonincreasing order
+"""
+def pagerank(networkMatrix): 
+    
+    # create transition matrix
+    networkMatrix = np.array(networkMatrix, dtype = 'double')
+    for i in range(len(networkMatrix)):
+        columnSum = np.sum(networkMatrix[:,i])
+        networkMatrix[:,i]/=columnSum
+
+    # calculate eigenvectors and values
+    eigVals, eigVecs = np.linalg.eig(networkMatrix)
+
+    # find the value of the eigenvalue equal to 1 using the fact 1 is the greatest value
+    eigValIndex = np.argmax(eigVals)
+    
+    # extract column containing the eigenvector we want
+    vector = eigVecs[:,eigValIndex]
+    
+    # calculate eigenvector scale constant as 1/sum of the vector components so that our Probability Distriubtion is correct
+    vector /= np.sum(eigVecs[:,eigValIndex])
+    
+    # return the eigenvector the list converted into a numpy array
+    return vector, createIndexVector(vector)
+
+"""
+Challenge 5
+@param G: binary network matrix
+@param v: index of node that is at the beginning of path
+@param w: index of node that is at the end of path
+@param k: path length desired
+@return numberofPaths: number of paths of length k
+
+"""
 def number_paths(G, v, w, k):
     return np.linalg.matrix_power(G,k)[v][w]
     
