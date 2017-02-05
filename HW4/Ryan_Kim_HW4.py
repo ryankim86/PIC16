@@ -9,6 +9,43 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 
+Zachary_network=[
+[1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0],
+[1,1,1,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0],
+[1,1,1,1,0,0,0,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0],
+[1,1,1,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1],
+[0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+[0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1],
+[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,1,1],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,1,0,0],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1],
+[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,1],
+[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0,1,1],
+[0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,1,1,1],
+[0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,1,0,1,0,1,1,0,0,0,0,0,1,1,1,1,1],
+[0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,1,0,0,1,1,1,0,1,1,0,0,1,1,1,1,1,1,1,1]]
+
+
 # defining a global variable
 happiness_dictionary = {}
 
@@ -32,8 +69,8 @@ def happiness(englishText):
     else:
         return (rawHappinessScore / numMatchedWordsInDict)
 
-fid = open('/home/ryan/Documents/PIC16/HW4/GulTravel.txt','r')
-Rtxt = fid.read()
+#fid = open('/home/ryan/Documents/PIC16/HW4/GulTravel.txt','r')
+#Rtxt = fid.read()
 
 def story_arc(story):
     
@@ -72,10 +109,10 @@ def story_arc(story):
     
 """
 Helper Function used for both Challenge 2 and 3
-@param vector: a vector
+@param vector: a vector or a List
 @return rankVector: another vector of indices in order of nonincreasing rank
 """
-def createIndexVector(vector):
+def createRankVector(vector):
     tupleList = []   
     vectorRank = []
     
@@ -95,8 +132,8 @@ def createIndexVector(vector):
 """
 Challange 2
 @param networkMatrix: A network in matrix form. Can be either a numpy array or a List of Lists
-@return : scoreVector: score vector of the network
-@return : rankVector: vector of indices of scoreVector in nonincreasing order
+@return scoreVector: score vector of the network
+@return rankVector: vector of indices of scoreVector in terms of nonincreasing score order
 """
 def pagerank(networkMatrix): 
     
@@ -119,7 +156,30 @@ def pagerank(networkMatrix):
     vector /= np.sum(eigVecs[:,eigValIndex])
     
     # return the eigenvector the list converted into a numpy array
-    return vector, createIndexVector(vector)
+    return vector, createRankVector(vector)
+    
+"""
+Challenge 3
+@param networkMatrix: a network in matrix form
+@return degreeVector: a vector containing the degrees of nodes in network
+@return rankVector: a vector of indices of degreeVector in nonincreasing degree value
+"""
+def degree(networkMatrix):
+    
+    # cast into numpy array 
+    networkMatrix = np.array(networkMatrix)
+    
+    degreeList = []
+    
+    # sum each row. Push result to a List
+    for i in range(len(networkMatrix)):
+        degreeList.append(np.sum(networkMatrix[i,:]))
+    
+    # return List cast as a numpy array and its associated rank vector
+    return np.array(degreeList), createRankVector(degreeList)
+
+def pageRankVsDegree(networkMatrix):
+    return
 
 """
 Challenge 5
