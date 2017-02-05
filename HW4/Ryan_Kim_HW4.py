@@ -49,62 +49,66 @@ Zachary_network=[
 # defining a global variable
 happiness_dictionary = {}
 
-def happiness(englishText):
+fid = open('/home/ryan/Documents/PIC16/HW4/hisLittleWorld.txt','r')
+Rtxt = fid.read()
+
+def story_arc(story):
     
+    # open the happiness dictionary
     fid = open('/home/ryan/Documents/PIC16/happiness_dictionary.txt','r')
     txt = fid.read()
     exec(txt, globals())
     
-    numMatchedWordsInDict = 0
-    rawHappinessScore = 0
-    p = re.compile('([A-Za-z]+)[\s-]?')
-    matches = p.findall(englishText)
-    
-    for match in matches:
-        if match.lower() in happiness_dictionary:
-            numMatchedWordsInDict+=1
-            rawHappinessScore+=happiness_dictionary[match.lower()]
-    if numMatchedWordsInDict == 0:
-        return 0
-    else:
-        return (rawHappinessScore / numMatchedWordsInDict)
-
-#fid = open('/home/ryan/Documents/PIC16/HW4/GulTravel.txt','r')
-#Rtxt = fid.read()
-
-def story_arc(story):
-    
     # parse through string and separate words 
     p = re.compile('([A-Za-z]+)[\s-]?')
-    matches = p.findall(story)
-        
-    # passStrings will be passed into the happiness function to calculate a happiness score.
-    passString1 = ""
-    passString2 = ""
-    counter = 0
-    counter2 = 0
+    matches = p.findall(story)        
+
+    # counters
+    numMatchedWordsInDict = 0
+    prevRawScore = 0
+    rawHappinessScore = 0
+    averagedScore = 0
+    xCounter = 0
     
+    # Lists for plotting
     x = []
     y = []
     
     # a data point will be every 50 words
     for match in matches:
-        if counter2 <= 24:
-            passString1 += match
-        elif counter2 >= 25 and counter2 < 50:
-            passString1 += " " + match
-            passString2 += " " + match
-        elif counter2 == 50:
-            x.append(counter)
-            counter += 10
-            y.append(happiness(passString1))
-            counter2 = 24
-            passString1 = passString2
-            passString2 = ""
-        counter2 += 1
-    
-    plt.xlim([-50, counter + 50])
-    plt.ylim([4,6])
+        # only count word if it is in the dictionary
+        if match.lower() in happiness_dictionary:
+            numMatchedWordsInDict+=1
+            
+            # if we have the sum of the happiness score of 50 words, then average to create point
+            if numMatchedWordsInDict == 50:
+                
+                # if it is the first 50 words, then normal average
+                if prevRawScore == 0:
+                    averagedScore = rawHappinessScore / numMatchedWordsInDict
+                    prevRawScore = rawHappinessScore
+                # otherwise, average with last score so points are more continuous
+                else:
+                    averagedScore = (rawHappinessScore + prevRawScore) / (2*numMatchedWordsInDict)
+                    prevRawScore = rawHappinessScore
+                    rawHappinessScore = 0
+                
+                print(averagedScore)
+                
+                #add points
+                x.append(xCounter)
+                y.append(averagedScore)
+                
+                # reset for new point
+                numMatchedWordsInDict = 0
+                xCounter += 1
+                
+            # otherwise add word's happiness score to a running total
+            else:
+                rawHappinessScore+=happiness_dictionary[match.lower()]
+    # plot
+    plt.xlim([-50, xCounter + 50])
+    plt.ylim([4,9])
     plt.plot(x,y, '-')
     
 """
