@@ -9,58 +9,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 
-Zachary_network=[
-[1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,0],
-[1,1,1,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0],
-[1,1,1,1,0,0,0,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0],
-[1,1,1,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1],
-[0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-[1,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
-[0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
-[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1],
-[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,1,1],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,1,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1],
-[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,1],
-[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0,1,1],
-[0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1],
-[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,1,1,1],
-[0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,1,0,1,0,1,1,0,0,0,0,0,1,1,1,1,1],
-[0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,1,0,0,1,1,1,0,1,1,0,0,1,1,1,1,1,1,1,1]]
-
-
 # defining a global variable
 happiness_dictionary = {}
 
-fid = open('/home/ryan/Documents/PIC16/HW4/GulTravel.txt','r')
-Rtxt = fid.read()
-
 """
-Challenge 1: will plot the happiness arc of a story. A single point consists of the average score of 300 words.
-This quantity can be changed by adjusting the 'wordsPerBlock' variable in function body.
+Challenge 1: will plot the happiness arc of a story.
+This quantity can be changed by adjusting the 'initialWordsPerBlock' variable in function body.
 @param story: A story in string format
 """
 def story_arc(story):
     
-    # A point will be 300 words. This value can be changed, and the rest of the code should adjust
-    wordsPerBlock = 300
+    # the first point will be this many words. All subsequent points will be the average of 1.50 times many more words
+    initialWordsPerBlock = 400
+    x = []
+    y = []
     
     # open the happiness dictionary
     fid = open('/home/ryan/Documents/PIC16/happiness_dictionary.txt','r')
@@ -73,7 +35,7 @@ def story_arc(story):
 
     # counters
     numMatchedWordsInDict = 0
-    prev25RawScore = 0
+    prevHalfRawScore = 0
     rawHappinessScore = 0
     averagedScore = 0
     xCounter = 0
@@ -82,23 +44,24 @@ def story_arc(story):
     x = []
     y = []
     
-    # a data point will be every 50 words
+    # a data point will be every (1.5*initialWordsPerBlock) words
     for match in matches:
         # only count word if it is in the dictionary
         if match.lower() in happiness_dictionary:
-            numMatchedWordsInDict+=1
+            numMatchedWordsInDict += 1
             
-            if numMatchedWordsInDict == wordsPerBlock:
+            # calculate average after enough words counted
+            if numMatchedWordsInDict == initialWordsPerBlock:
                 
-                # if it is the first 50 words, then normal average
-                if prev25RawScore == 0:
+                # if it is the first (initialWordsPerBlock) words, then normal average
+                if prevHalfRawScore == 0:
                     averagedScore = rawHappinessScore / numMatchedWordsInDict
-                # otherwise, average with last score so points are more continuous
+                # otherwise, average with last half of the previous score so points are more continuous
                 else:
-                    averagedScore = (rawHappinessScore + prev25RawScore) / (1.50*wordsPerBlock)
+                    averagedScore = (rawHappinessScore + prevHalfRawScore) / (1.50 * initialWordsPerBlock)
                     
                 rawHappinessScore = 0
-                prev25RawScore = 0
+                prevHalfRawScore = 0
                 
                 #add points
                 x.append(xCounter)
@@ -109,24 +72,26 @@ def story_arc(story):
                 xCounter += 1
                 
             # keep track of the score of the last half of the previous block
-            elif numMatchedWordsInDict >= (wordsPerBlock / 2):
+            elif numMatchedWordsInDict >= (initialWordsPerBlock / 2):
                 rawHappinessScore += happiness_dictionary[match.lower()]
-                prev25RawScore += happiness_dictionary[match.lower()]
+                prevHalfRawScore += happiness_dictionary[match.lower()]
                 
             # otherwise add word's happiness score to a running total
             else:
                 rawHappinessScore+=happiness_dictionary[match.lower()]
+                
     # plot
     plt.xlim([-50, xCounter + 50])
     plt.title('Story Happiness Arc')
     plt.ylim([int(min(y)),int(max(y))+1])
-    plt.xlabel('Words in Blocks of ' + str(wordsPerBlock))
+    plt.xlabel('Words in Blocks of ' + str(int(1.50*initialWordsPerBlock)))
     plt.ylabel('Happiness Score')
     plt.plot(x,y, '-')
+    
     return
     
 """
-Helper Function used for both Challenge 2 and 3
+Helper Function used for both Challenge 2 and 3. Will order vectors
 @param vector: a vector or a List
 @return rankVector: another vector of indices in order of nonincreasing rank
 """
@@ -148,7 +113,7 @@ def createRankVector(vector):
     return np.array(vectorRank)
 
 """
-Challange 2
+Challange 2: Calculates pagerank of a network
 @param networkMatrix: A network in matrix form. Can be either a numpy array or a List of Lists
 @return scoreVector: score vector of the network
 @return rankVector: vector of indices of scoreVector in terms of nonincreasing score order
@@ -156,11 +121,14 @@ Challange 2
 def pagerank(networkMatrix): 
     
     # create transition matrix
-    #networkMatrix = np.array(networkMatrix, dtype = 'double')
+    networkMatrix = np.array(networkMatrix, dtype = 'double')
     for i in range(len(networkMatrix)):
         columnSum = np.sum(networkMatrix[:,i])
+        
+        # if unconnected node, ignore
         if columnSum == 0:
             continue
+        
         networkMatrix[:,i]/=columnSum
 
     # calculate eigenvectors and values
@@ -179,7 +147,7 @@ def pagerank(networkMatrix):
     return vector, createRankVector(vector)
     
 """
-Challenge 3
+Challenge 3: calculates the degree score of a network
 @param networkMatrix: a network in matrix form
 @return degreeVector: a vector containing the degrees of nodes in network
 @return rankVector: a vector of indices of degreeVector in nonincreasing degree value
@@ -200,35 +168,37 @@ def degree(networkMatrix):
 
 """
 Challenge 4: plots degree/strength vs pagerank
-This example will use data from: http://snap.stanford.edu/data/CollegeMsg.html
+This example will use data from: http://konect.uni-koblenz.de/networks/arenas-jazz
 """
 def pageRankVsDegree():
     
-    # we know that the network has 1899 nodes
-    messageNetworkMatrix = np.zeros([1899,1899])
+    # we know that the network has 198 nodes
+    messageNetworkMatrix = np.zeros([198,198])
     
-    with open('CollegeMsg.txt') as input_file:
+    with open('jazz.txt') as input_file:
         for line in input_file:
             messageParticipants = line.split()
-            """ 
-            using the fact that the participants are given ID numbers that are integers from 1 to 1890,
-            increment the value of entry i-1,j-1 when person i sent an email to person j           
-            """
-            messageNetworkMatrix[int(messageParticipants[0])-1][int(messageParticipants[1])-1] +=1
+            # musicians are assigned integers from 1 to 198. If there exists edge, matrix[i-1][j-1] and matrix[j-1][i-1] equal 1
+            messageNetworkMatrix[int(messageParticipants[0])-1][int(messageParticipants[1])-1] = 1
+            messageNetworkMatrix[int(messageParticipants[1])-1][int(messageParticipants[0])-1] = 1
         
     pageRankVector = pagerank(messageNetworkMatrix)
-    strengthVector = degree(messageNetworkMatrix)
-    
-    print(pageRankVector)
-    
-#    plt.xlim([-5,50])
-    
-    plt.plot(strengthVector,pageRankVector,'o', color = 'gold', markersize = 11)
+    strengthVector = degree(messageNetworkMatrix)  
+  
+    # plot  
+    plt.plot(strengthVector[0], pageRankVector[0],'o', color = 'gold', markersize = 11)
+    plt.xlabel('Strength Centrality')
+    plt.ylabel('PageRank Value')
     
     return
 
+G=[[0,1,1,0],[1,0,1,0],[1,1,0,1],[0,0,1,0]]
+v=0
+w=3
+k=20
+
 """
-Challenge 5
+Challenge 5: calculates the number of paths of length k between two nodes
 @param G: binary network matrix
 @param v: index of node that is at the beginning of path
 @param w: index of node that is at the end of path
