@@ -68,8 +68,8 @@ def story_arc(story):
     exec(txt, globals())
     
     # parse through string and separate words 
-    p = re.compile('([A-Za-z]+)[\s-]?')
-    matches = p.findall(story)        
+    p = re.compile('([A-Za-z\']+)[\s-]?')
+    matches = p.findall(story)     
 
     # counters
     numMatchedWordsInDict = 0
