@@ -53,14 +53,14 @@ fid = open('/home/ryan/Documents/PIC16/HW4/GulTravel.txt','r')
 Rtxt = fid.read()
 
 """
-Challenge 1: will plot the happiness arc of a story. A single point consists of the average score of 200 words.
+Challenge 1: will plot the happiness arc of a story. A single point consists of the average score of 300 words.
 This quantity can be changed by adjusting the 'wordsPerBlock' variable in function body.
 @param story: A story in string format
 """
 def story_arc(story):
     
-    # A point will be 200 words. This value can be changed, and the rest of the code should adjust
-    wordsPerBlock = 200
+    # A point will be 300 words. This value can be changed, and the rest of the code should adjust
+    wordsPerBlock = 300
     
     # open the happiness dictionary
     fid = open('/home/ryan/Documents/PIC16/happiness_dictionary.txt','r')
@@ -156,9 +156,11 @@ Challange 2
 def pagerank(networkMatrix): 
     
     # create transition matrix
-    networkMatrix = np.array(networkMatrix, dtype = 'double')
+    #networkMatrix = np.array(networkMatrix, dtype = 'double')
     for i in range(len(networkMatrix)):
         columnSum = np.sum(networkMatrix[:,i])
+        if columnSum == 0:
+            continue
         networkMatrix[:,i]/=columnSum
 
     # calculate eigenvectors and values
@@ -196,7 +198,33 @@ def degree(networkMatrix):
     # return List cast as a numpy array and its associated rank vector
     return np.array(degreeList), createRankVector(degreeList)
 
-def pageRankVsDegree(networkMatrix):
+"""
+Challenge 4: plots degree/strength vs pagerank
+This example will use data from: http://snap.stanford.edu/data/CollegeMsg.html
+"""
+def pageRankVsDegree():
+    
+    # we know that the network has 1899 nodes
+    messageNetworkMatrix = np.zeros([1899,1899])
+    
+    with open('CollegeMsg.txt') as input_file:
+        for line in input_file:
+            messageParticipants = line.split()
+            """ 
+            using the fact that the participants are given ID numbers that are integers from 1 to 1890,
+            increment the value of entry i-1,j-1 when person i sent an email to person j           
+            """
+            messageNetworkMatrix[int(messageParticipants[0])-1][int(messageParticipants[1])-1] +=1
+        
+    pageRankVector = pagerank(messageNetworkMatrix)
+    strengthVector = degree(messageNetworkMatrix)
+    
+    print(pageRankVector)
+    
+#    plt.xlim([-5,50])
+    
+    plt.plot(strengthVector,pageRankVector,'o', color = 'gold', markersize = 11)
+    
     return
 
 """
