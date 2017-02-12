@@ -12,86 +12,90 @@ import re
 # defining a global variable
 happiness_dictionary = {}
 
-def happiness(englishText):
+"""
+Challenge 1: will plot the happiness arc of a story.
+This quantity can be changed by adjusting the 'initialWordsPerBlock' variable in function body.
+@param story: A story in string format
+"""
+def story_arc(story):
     
+    # the first point will be this many words. All subsequent points will be the average of 1.50 times many more words
+    initialWordsPerBlock = 400
+    x = []
+    y = []
+    
+    # open the happiness dictionary
     fid = open('/home/ryan/Documents/PIC16/happiness_dictionary.txt','r')
     txt = fid.read()
     exec(txt, globals())
     
-    numMatchedWordsInDict = 0
-    rawHappinessScore = 0
-    p = re.compile('([A-Za-z]+)[\s-]?')
-    matches = p.findall(englishText)
-    
-    for match in matches:
-        if match.lower() in happiness_dictionary:
-            numMatchedWordsInDict+=1
-            rawHappinessScore+=happiness_dictionary[match.lower()]
-    if numMatchedWordsInDict == 0:
-        return 0
-    else:
-        return (rawHappinessScore / numMatchedWordsInDict)
-
-fid = open('/home/ryan/Documents/PIC16/HW4/GulTravel.txt','r')
-Rtxt = fid.read()
-
-def story_arc(story):
-    
     # parse through string and separate words 
-    p = re.compile('([A-Za-z]+)[\s-]?')
-    matches = p.findall(story)
-        
-    # passStrings will be passed into the happiness function to calculate a happiness score.
-    passString1 = ""
-    passString2 = ""
-    counter = 0
-    counter2 = 0
+    p = re.compile('([A-Za-z\']+)[\s-]?')
+    matches = p.findall(story)     
+
+    # counters
+    numMatchedWordsInDict = 0
+    prevHalfRawScore = 0
+    rawHappinessScore = 0
+    averagedScore = 0
+    xCounter = 0
     
+    # Lists for plotting
     x = []
     y = []
     
-    # a data point will be every 50 words
+    # a data point will be every (1.5*initialWordsPerBlock) words
     for match in matches:
-        if counter2 <= 24:
-            passString1 += match
-        elif counter2 >= 25 and counter2 < 50:
-            passString1 += " " + match
-            passString2 += " " + match
-        elif counter2 == 50:
-            x.append(counter)
-            counter += 10
-            y.append(happiness(passString1))
-            counter2 = 24
-            passString1 = passString2
-            passString2 = ""
-        counter2 += 1
-    
-    plt.xlim([-50, counter + 50])
-    plt.ylim([4,6])
+        # only count word if it is in the dictionary
+        if match.lower() in happiness_dictionary:
+            numMatchedWordsInDict += 1
+            
+            # calculate average after enough words counted
+            if numMatchedWordsInDict == initialWordsPerBlock:
+                
+                # if it is the first (initialWordsPerBlock) words, then normal average
+                if prevHalfRawScore == 0:
+                    averagedScore = rawHappinessScore / numMatchedWordsInDict
+                # otherwise, average with last half of the previous score so points are more continuous
+                else:
+                    averagedScore = (rawHappinessScore + prevHalfRawScore) / (1.50 * initialWordsPerBlock)
+                    
+                rawHappinessScore = 0
+                prevHalfRawScore = 0
+                
+                #add points
+                x.append(xCounter)
+                y.append(averagedScore)
+                
+                # reset for new point
+                numMatchedWordsInDict = 0
+                xCounter += 1
+                
+            # keep track of the score of the last half of the previous block
+            elif numMatchedWordsInDict >= (initialWordsPerBlock / 2):
+                rawHappinessScore += happiness_dictionary[match.lower()]
+                prevHalfRawScore += happiness_dictionary[match.lower()]
+                
+            # otherwise add word's happiness score to a running total
+            else:
+                rawHappinessScore+=happiness_dictionary[match.lower()]
+                
+    # plot
+    plt.xlim([-50, xCounter + 50])
+    plt.title('Story Happiness Arc')
+    plt.ylim([int(min(y)),int(max(y))+1])
+    plt.xlabel('Words in Blocks of ' + str(int(1.50*initialWordsPerBlock)))
+    plt.ylabel('Happiness Score')
     plt.plot(x,y, '-')
     
+    return
     
-def pagerank(networkMatrix): 
-    
-    # create transition matrix
-    networkMatrix = np.array(networkMatrix, dtype = 'double')
-    for i in range(len(networkMatrix)):
-        columnSum = np.sum(networkMatrix[:,i])
-        networkMatrix[:,i]/=columnSum
-
-    
-    # calculate eigenvectors and values
-    eigVals, eigVecs = np.linalg.eig(networkMatrix)
-
-    # find the value of the eigen value equal to 1 using the fact 1 is the greatest value
-    eigValIndex = np.argmax(eigVals)
-    
-    # extract column containing the eigenvector we want
-    vector = eigVecs[:,eigValIndex]
-    
-    # calculate eigenvector scale constant as 1/sum of the vector components so that our Probability Distriubtion is correct
-    vector /= np.sum(eigVecs[:,eigValIndex])
-    
+"""
+Helper Function used for both Challenge 2 and 3. Will order vectors
+@param vector: a vector or a List
+@return rankVector: another vector of indices in order of nonincreasing rank
+"""
+def createRankVector(vector):
     tupleList = []   
     vectorRank = []
     
@@ -106,9 +110,102 @@ def pagerank(networkMatrix):
     for i in range(len(tupleList)):
         vectorRank.append(tupleList[i][1])
     
-    # return the eigenvector the list converted into a numpy array
-    return vector, np.array(vectorRank)
+    return np.array(vectorRank)
 
+"""
+Challange 2: Calculates pagerank of a network
+@param networkMatrix: A network in matrix form. Can be either a numpy array or a List of Lists
+@return scoreVector: score vector of the network
+@return rankVector: vector of indices of scoreVector in terms of nonincreasing score order
+"""
+def pagerank(networkMatrix): 
+    
+    # create transition matrix
+    networkMatrix = np.array(networkMatrix, dtype = 'double')
+    for i in range(len(networkMatrix)):
+        columnSum = np.sum(networkMatrix[:,i])
+        
+        # if unconnected node, ignore
+        if columnSum == 0:
+            continue
+        
+        networkMatrix[:,i]/=columnSum
+
+    # calculate eigenvectors and values
+    eigVals, eigVecs = np.linalg.eig(networkMatrix)
+
+    # find the value of the eigenvalue equal to 1 using the fact 1 is the greatest value
+    eigValIndex = np.argmax(eigVals)
+    
+    # extract column containing the eigenvector we want
+    vector = eigVecs[:,eigValIndex]
+    
+    # calculate eigenvector scale constant as 1/sum of the vector components so that our Probability Distriubtion is correct
+    vector /= np.sum(eigVecs[:,eigValIndex])
+    
+    # return the eigenvector the list converted into a numpy array
+    return vector, createRankVector(vector)
+    
+"""
+Challenge 3: calculates the degree score of a network
+@param networkMatrix: a network in matrix form
+@return degreeVector: a vector containing the degrees of nodes in network
+@return rankVector: a vector of indices of degreeVector in nonincreasing degree value
+"""
+def degree(networkMatrix):
+    
+    # cast into numpy array 
+    networkMatrix = np.array(networkMatrix)
+    
+    degreeList = []
+    
+    # sum each row. Push result to a List
+    for i in range(len(networkMatrix)):
+        degreeList.append(np.sum(networkMatrix[i,:]))
+    
+    # return List cast as a numpy array and its associated rank vector
+    return np.array(degreeList), createRankVector(degreeList)
+
+"""
+Challenge 4: plots degree/strength vs pagerank
+This example will use data from: http://konect.uni-koblenz.de/networks/arenas-jazz
+"""
+def pageRankVsDegree():
+    
+    # we know that the network has 198 nodes
+    messageNetworkMatrix = np.zeros([198,198])
+    
+    with open('jazz.txt') as input_file:
+        for line in input_file:
+            messageParticipants = line.split()
+            # musicians are assigned integers from 1 to 198. If there exists edge, matrix[i-1][j-1] and matrix[j-1][i-1] equal 1
+            messageNetworkMatrix[int(messageParticipants[0])-1][int(messageParticipants[1])-1] = 1
+            messageNetworkMatrix[int(messageParticipants[1])-1][int(messageParticipants[0])-1] = 1
+        
+    pageRankVector = pagerank(messageNetworkMatrix)
+    strengthVector = degree(messageNetworkMatrix)  
+  
+    # plot  
+    plt.plot(strengthVector[0], pageRankVector[0],'o', color = 'gold', markersize = 11)
+    plt.xlabel('Strength Centrality')
+    plt.ylabel('PageRank Value')
+    
+    return
+
+G=[[0,1,1,0],[1,0,1,0],[1,1,0,1],[0,0,1,0]]
+v=0
+w=3
+k=20
+
+"""
+Challenge 5: calculates the number of paths of length k between two nodes
+@param G: binary network matrix
+@param v: index of node that is at the beginning of path
+@param w: index of node that is at the end of path
+@param k: path length desired
+@return numberofPaths: number of paths of length k
+
+"""
 def number_paths(G, v, w, k):
     return np.linalg.matrix_power(G,k)[v][w]
     
