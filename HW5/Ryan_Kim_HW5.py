@@ -11,6 +11,7 @@ Challenge 1
 def balance(eq):
     import re
     import sympy as sp
+    
     # split the equation into its two halves
     equation = eq.split('=', 1)
     print(equation[0])
@@ -19,20 +20,20 @@ def balance(eq):
     # go through the input and find the elements involved
     leftMatches = re.findall('([A-Za-z\d]+)', equation[0])
     rightMatches = re.findall('([A-Za-z\d]+)', equation[1])
-    
+         
     Matches = re.findall('([A-Z]{1}[a-z]?)(\d)?', equation[0])
-    for match in Matches:
-        print(match)
     
     # create a list of symbols
     n = len(leftMatches)+len(rightMatches)
     symbolString = 'x0:' + str(n)
-    xList = sp.symbols(symbolString)
     xList = ['x%d'%i for i in range(n)]
+    xList = sp.symbols(symbolString)
+    
     
     # create a dictionary that will store the dictionaries to store components of the eq
     left = {}
     right = {}
+    uniqueElements = {}
     
     # parse through chemical blocks
     for i in range(len(leftMatches)):
@@ -50,8 +51,10 @@ def balance(eq):
                     left['x%d'%i][match[0]] = 1
                 else:
                     left['x%d'%i][match[0]] = int(match[1])
-    for i in range(len(leftMatches), n-1):
-        elementMatches = re.findall('([A-Z]{1}[a-z]?)(\d)?', rightMatches[i])
+            uniqueElements[match[0]] = True
+                    
+    for i in range(len(leftMatches), n):
+        elementMatches = re.findall('([A-Z]{1}[a-z]?)(\d)?', rightMatches[i-len(leftMatches)])
         right['x%d'%i] = {}
         for match in elementMatches:
             if match[0] in right['x%d'%i]:
@@ -65,6 +68,22 @@ def balance(eq):
                     right['x%d'%i][match[0]] = 1
                 else:
                     right['x%d'%i][match[0]] = int(match[1])
+            uniqueElements[match[0]] = True
+            
+    augMatrix = sp.zeros(len(uniqueElements), n+1)
+    
+    counter = 0
+    for element in uniqueElements:
+        for i in range(len(left)):
+            if element in left['x%d'%i]:
+                augMatrix[counter, i] = int(left['x%d'%i][element])
+        for i in range(len(leftMatches), n):
+            if element in right['x%d'%i]:
+                augMatrix[counter, i] = int(-1*right['x%d'%i][element])
+        counter += 1
+        
+    linSolu = sp.solve_linear_system(augMatrix, *xList)
+    print(linSolu)
     
     return
 
