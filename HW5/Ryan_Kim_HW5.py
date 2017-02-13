@@ -14,45 +14,55 @@ def balance(eq):
     
     # split the equation into its two halves
     equation = eq.split('=', 1)
-    print(equation[0])
-    print(equation[1])
 
     # go through the input and find the elements involved
     leftMatches = re.findall('([A-Za-z\d]+)', equation[0])
     rightMatches = re.findall('([A-Za-z\d]+)', equation[1])
          
-    Matches = re.findall('([A-Z]{1}[a-z]?)(\d)?', equation[0])
+    #Matches = re.findall('([A-Z]{1}[a-z]?)(\d)?', equation[0])
     
     # create a list of symbols
-    n = len(leftMatches)+len(rightMatches)
+    n = len(leftMatches) + len(rightMatches)
     symbolString = 'x0:' + str(n)
     xList = ['x%d'%i for i in range(n)]
     xList = sp.symbols(symbolString)
-    
     
     # create a dictionary that will store the dictionaries to store components of the eq
     left = {}
     right = {}
     uniqueElements = {}
     
-    # parse through chemical blocks
+    # parse through chemical blocks for both sides of the equation
     for i in range(len(leftMatches)):
+        
+        # find the individual elements within each chemical block
         elementMatches = re.findall('([A-Z]{1}[a-z]?)(\d)?', leftMatches[i])
+        
+        # create a dictionary that will hold the number of each element within that block. Keys are the element symbol
         left['x%d'%i] = {}
+        
+        # calculate how many of each element is within block
         for match in elementMatches:
+            
+            # if key already in the dictionary, then add to the previous value
             if match[0] in left['x%d'%i]:
                 prevValue = left['x%d'%i][match[0]]
                 if len(match[1]) == 0:
                     left['x%d'%i][match[0]] = prevValue + 1
                 else:
                     left['x%d'%i][match[0]] = prevValue + int(match[1])
+                    
+            # otherwise, record a new key
             else:
                 if len(match[1]) == 0:
                     left['x%d'%i][match[0]] = 1
                 else:
                     left['x%d'%i][match[0]] = int(match[1])
+                    
+            # keep track of elements in equation
             uniqueElements[match[0]] = True
                     
+    # repeat for right side of the equation
     for i in range(len(leftMatches), n):
         elementMatches = re.findall('([A-Z]{1}[a-z]?)(\d)?', rightMatches[i-len(leftMatches)])
         right['x%d'%i] = {}
@@ -69,10 +79,10 @@ def balance(eq):
                 else:
                     right['x%d'%i][match[0]] = int(match[1])
             uniqueElements[match[0]] = True
-            
+      
+    # add coefficients for linear system to augmented matrix
+    counter = 0      
     augMatrix = sp.zeros(len(uniqueElements), n+1)
-    
-    counter = 0
     for element in uniqueElements:
         for i in range(len(left)):
             if element in left['x%d'%i]:
@@ -83,9 +93,38 @@ def balance(eq):
         counter += 1
         
     linSolu = sp.solve_linear_system(augMatrix, *xList)
-    print(linSolu)
+
+    # create a sympy matrix to store the results of the linear eq. solver
+    varMatrix = sp.zeros(n,1)
+    count = 0
+    for key in linSolu:
+        varMatrix[count] = linSolu[key]
+        count += 1
     
-    return
+    # substitute 1 for any free variable
+    for i in range(n):
+        if xList[i] not in linSolu:
+            varMatrix = varMatrix.subs(xList[i], 1)
+            varMatrix[i] = 1
+    
+    # create output string
+    returnString = ''
+    for i in range(len(leftMatches)):
+        returnString += str(varMatrix[i]) + leftMatches[i]
+        if i == len(leftMatches)-1:
+            returnString += ' = '
+        else:
+            returnString += ' + '
+    for i in range(len(rightMatches)):
+        returnString += str(varMatrix[len(leftMatches)+i]) + rightMatches[i]
+        if i != len(rightMatches)-1:
+            returnString += ' + '
+    
+    
+    if len(linSolu) == 0:
+        return 'No Solution'
+    else:
+        return returnString
 
 """
 Challenge 3
