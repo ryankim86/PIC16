@@ -101,7 +101,7 @@ def balance(eq):
         varMatrix[count] = linSolu[key]
         count += 1
     
-    # substitute 1 for any free variable
+    # substitute 2 for any free variable
     for i in range(n):
         if xList[i] not in linSolu:
             varMatrix = varMatrix.subs(xList[i], 1)
@@ -119,7 +119,6 @@ def balance(eq):
         returnString += str(varMatrix[len(leftMatches)+i]) + rightMatches[i]
         if i != len(rightMatches)-1:
             returnString += ' + '
-    
     
     if len(linSolu) == 0:
         return 'No Solution'
@@ -141,14 +140,18 @@ def taylor_figure(k):
     function = 0
     # Maclaurin Exp: f(x) = f(a) + f'(a)(x-a) + f''(a)(x-a)^2/2! + f^3(a)(x-a)^3/3! + ...
     for j in range(k+1):
-        # cycle through three colors
+        # cycle through five colors
         color = ''
-        if j % 3 == 0:
+        if j % 5 == 0:
             color = 'red'
-        elif j % 3 == 1:
+        elif j % 5 == 1:
             color = 'purple'
-        elif j % 3 == 2:
+        elif j % 5 == 2:
             color = 'cyan'
+        elif j % 5 == 3:
+            color = 'blue'
+        elif j % 5 == 4:
+            color = 'yellow'
             
         # add the next term
         function += (sp.diff(sp.cos(x), x, j).subs(x,0)*(x**j)*(1/math.factorial(j)))
@@ -158,4 +161,3 @@ def taylor_figure(k):
     # show plot
     plot1.show()
     return
-        
