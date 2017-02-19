@@ -29,6 +29,7 @@ Challenge 1: Will blur a grayscale image (remove noise) using either Mean or Gau
 @return filteredImage: a numpy array representing the image with the noise removed
 """
 def blurring(image, k = 3, option = 'g', sigma = 1):
+    import matplotlib
     import numpy as np
     import math
     
@@ -68,7 +69,7 @@ def blurring(image, k = 3, option = 'g', sigma = 1):
             tempValue = np.multiply(tempValue, imFilter)
             filteredImage[i, j] = np.sum(tempValue)
     
-    #matplotlib.pyplot.imshow(filteredImage, cmap = 'gray')
+    matplotlib.pyplot.imshow(filteredImage, cmap = 'gray')
     return filteredImage
     
 """
@@ -77,40 +78,47 @@ Challenge 2: Will detect vertical, horizontal, or both
 @param option: selects edge type. 'v' for vertical. 'h' for horizontal. 'b' for both
 @return edgeImage: returns a numpy array representing the image
 """
-def detect_edge(image1, option = 'v'):
+def detect_edge(image, option = 'b'):
     import matplotlib
     import numpy as np
     import math
     
-    image = np.array(grayscale('bathroom.png'))
-    
-    # create Sobel matrices for 
+    # create Sobel matrices for vertical 
     sVertical= np.array([[-1,0,1], [-2,0,2], [-1,0,1]], dtype = np.float)
     sHorizontal = np.array([[1,2,1], [0,0,0], [-1,-2,-1]], dtype = np.float)
     
+    # array to temporarily store image array values
     tempValue = np.zeros((3,3))
     
+    # image for return
     edgeImage = np.zeros((image.shape[0], image.shape[1]), dtype = np.float)
     
     # apply sobel filter    
     for i in range(math.floor(3/2), len(image) - math.floor(3/2)):
         for j in range(math.floor(3/2), len(image[i]) - math.floor(3/2)):
+            
+            # grab a 3 by 3 block
             tempValue = np.array(image[i - math.floor(3/2): i + math.ceil(3/2), j - math.floor(3/2) : j + math.ceil(3/2)])
+            
+            # both
             if option == 'b':
                 vert = np.multiply(tempValue, sVertical)
                 hori = np.multiply(tempValue, sHorizontal)
                 edgeValue = np.sqrt(np.sum(vert)**2 + np.sum(hori)**2)
+            # vertical
             elif option == 'v':
                 tempValue = np.multiply(tempValue, sVertical)
                 edgeValue = np.sum(tempValue)
+            # horizontal
             elif option == 'h':
                 tempValue = np.multiply(tempValue, sHorizontal)
                 edgeValue = np.sum(tempValue)
-                
+            
+            # store value in the return matrix
             edgeImage[i,j] = edgeValue
     
     matplotlib.pyplot.imshow(edgeImage, cmap = 'gray')    
-    return
+    return edgeImage
 
 """
 Challenge 3: Will split a grayscale image into foreground and highground using the Otsu Threshold method
@@ -126,31 +134,38 @@ def otsu_threshold(image):
     nim = np.array(image)
     hist = im.histogram()
     
+    # create matrix that will store True/False values whether it is in the foreground or not
     returnMask = np.zeros((nim.shape[0], nim.shape[1]), dtype = np.bool)
     
+    # tuple to store the highest variance and its correpsonding threshold
     maxVar = (0,0)
     
+    # check every threshold value for the Otsu Method
     for t in range(1,255):
         
         # calculate Total Count
         omegaZero = np.sum(hist[0:t-1])
         omegaOne = np.sum(hist[t:254])
         
+        # if there are no counts in either group, go to next threshold value
         if omegaZero == 0 or omegaOne == 0:
             continue
         
-        # calculate expectation of each group
         muZero = 0
         muOne = 0
         
+        # calculate expectation of each group
         for i in range(255):
             if i <= t-1:
                 muZero += (1/omegaZero)*i*hist[i]
             else:
                 muOne += (1/omegaOne)*i*hist[i]
+        
+        # calculate the variance. Replace if variance is higher
         currVar = omegaZero*omegaOne*(muZero-muOne)**2
         maxVar = (t, currVar) if maxVar[1] < currVar else maxVar
         
+    # using the threshold, create the mask
     for i in range(len(nim)):
         for j in range(len(nim[i])):
             returnMask[i,j] = True if nim[i,j] <= maxVar[0] else False
@@ -175,7 +190,7 @@ def blur_background(image):
     # generate mask that stores things that are in the foreground
     mask = otsu_threshold(image)
 
-    # 
+    # replace blurred pixels with original on the mask
     for i in range(len(blurredImage)):
         for j in range(len(blurredImage[i])):
             if mask[i,j] == True:
