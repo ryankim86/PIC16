@@ -2,7 +2,7 @@
 """
 Created on Sat Feb 18 12:59:59 2017
 
-@author: ryan
+@author: Ryan Kim
 """
 
 # takes an image path as input and converts it to a grayscale image
@@ -190,7 +190,7 @@ def blur_background(image):
     # generate mask that stores things that are in the foreground
     mask = otsu_threshold(image)
 
-    # replace blurred pixels with original on the mask
+    # replace blurred pixels with original on the masku
     for i in range(len(blurredImage)):
         for j in range(len(blurredImage[i])):
             if mask[i,j] == True:
