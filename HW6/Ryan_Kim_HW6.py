@@ -5,16 +5,16 @@ Created on Sat Feb 18 12:59:59 2017
 @author: Ryan Kim
 """
 
+import matplotlib.pyplot as plt
+import numpy as np
 
 """
-Part of Challenge 1 Test case:
+Part of Challenge 1 Test case: takes an image and adds salt and pepper noise based on parameter p
 @param im: numpy array representing the image
 @p: percentage of Salt and Pepper noise. Acceptable input is a floating point number between 0 and 1
 """
 def saltAndPepper(im, p):
     import random
-    import numpy as np
-    import matplotlib
     
     # pseudorandom number 
     randNum = 0  
@@ -32,7 +32,8 @@ def saltAndPepper(im, p):
                 im[i,j] = 0
             
             # otherwise, leave as-is
-    matplotlib.pyplot.imshow(im, cmap = 'gray')
+            
+    plt.imshow(im, cmap = 'gray')
     return np.array(im)
 
 """
@@ -44,8 +45,6 @@ Challenge 1: Will blur a grayscale image (remove noise) using either Mean or Gau
 @return filteredImage: a numpy array representing the image with the noise removed
 """
 def blurring(image, k = 3, option = 'g', sigma = 1):
-    import matplotlib
-    import numpy as np
     import math
     
     # check for invalid inputs
@@ -84,7 +83,7 @@ def blurring(image, k = 3, option = 'g', sigma = 1):
             tempValue = np.multiply(tempValue, imFilter)
             filteredImage[i, j] = np.sum(tempValue)
     
-    matplotlib.pyplot.imshow(filteredImage, cmap = 'gray')
+    plt.imshow(filteredImage, cmap = 'gray')
     return filteredImage
     
 """
@@ -94,8 +93,6 @@ Challenge 2: Will detect vertical, horizontal, or both
 @return edgeImage: returns a numpy array representing the image
 """
 def detect_edge(image, option = 'b'):
-    import matplotlib
-    import numpy as np
     import math
     
     # create Sobel matrices for vertical 
@@ -132,7 +129,7 @@ def detect_edge(image, option = 'b'):
             # store value in the return matrix
             edgeImage[i,j] = edgeValue
     
-    matplotlib.pyplot.imshow(edgeImage, cmap = 'gray')    
+    plt.imshow(edgeImage, cmap = 'gray')    
     return np.array(edgeImage)
 
 """
@@ -142,8 +139,6 @@ Challenge 3: Will split a grayscale image into foreground and highground using t
 """
 def otsu_threshold(image):
     from PIL import Image
-    import numpy as np
-    import matplotlib
     
     im = Image.fromarray(image)
     nim = np.array(image)
@@ -183,9 +178,9 @@ def otsu_threshold(image):
     # using the threshold, create the mask
     for i in range(len(nim)):
         for j in range(len(nim[i])):
-            returnMask[i,j] = True if nim[i,j] <= maxVar[0] else False
+            returnMask[i,j] = True if nim[i,j] >= maxVar[0] else False
             
-    matplotlib.pyplot.imshow(returnMask, cmap = 'gray')   
+    plt.imshow(returnMask, cmap = 'gray')   
     return np.array(returnMask, dtype = np.bool)
 
 """
@@ -193,8 +188,6 @@ Challenge 4: Will locate the background of an image and blur it
 @param image: a numpy array representing the image
 """
 def blur_background(image):
-    import numpy as np
-    import matplotlib
     
     # save the value of the original image
     originalImage = np.array(image)
@@ -208,29 +201,26 @@ def blur_background(image):
     # replace blurred pixels with original on the masku
     for i in range(len(blurredImage)):
         for j in range(len(blurredImage[i])):
-            if mask[i,j] == True:
+            if mask[i,j] == False:
                 blurredImage[i,j] = originalImage[i,j]
                 
-    matplotlib.pyplot.imshow(blurredImage, cmap = 'gray')   
+    plt.imshow(blurredImage, cmap = 'gray')   
     
-    return blurredImage
-    
-
-
+    return np.array(blurredImage)
 
 """
-Takes an image path and returns a numpy array representing the image in grayscale
+Functions used for test cases and everything else
 """
+
+# Takes an image path and returns a numpy array representing the image in grayscale
 def grayscale(imagePath): 
-    import numpy as np
-    import matplotlib
     from PIL import Image
    
     im = Image.open(imagePath)
     nim = np.array(im)
     
     grayscale = 0.2125 * nim[:,:,0] + 0.7514 * nim[:,:,1] + 0.0721 * nim[:,:,2]
-    matplotlib.pyplot.imshow(grayscale, cmap = 'gray')
+    plt.imshow(grayscale, cmap = 'gray')
 
     return np.array(grayscale)
 
@@ -238,18 +228,22 @@ def grayscale(imagePath):
 creates a simple image that has at least 3 colors as well as horizontal/vertical/diagonal edges
 """
 def createSimpleImage():
-    import numpy as np   
-    import matplotlib
     
+    # begin with a black 200x200 square
     im = np.zeros((200,200))
-    im[25:-25, 25:-25] = 1
     
-    for i in range(25, len(im)):
-        im[i,i:50] = 0.25
-        
+    # make corners different colors
+    im[0:100, 0:100] = 0.37
+    im[100:200, 0:100] = .22
+    im[100:200, 100:200] = .75
+    
+    # create a smaller white box inside
+    im[25:-25, 25:-25] = 1
+      
+    # place a triangle inside the white box to create a diagonal edge
     for i in range(25, len(im) - 25):
         for j in range(25, i):
             im[i,j] = .60
             
-    matplotlib.pyplot.imshow(im, cmap = 'gray')
+    plt.imshow(im, cmap = 'gray')
     return np.array(im)
