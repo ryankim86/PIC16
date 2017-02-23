@@ -5,20 +5,35 @@ Created on Sat Feb 18 12:59:59 2017
 @author: Ryan Kim
 """
 
-# takes an image path as input and converts it to a grayscale image
-def grayscale(imagePath): 
+
+"""
+Part of Challenge 1 Test case:
+@param im: numpy array representing the image
+@p: percentage of Salt and Pepper noise. Acceptable input is a floating point number between 0 and 1
+"""
+def saltAndPepper(im, p):
+    import random
     import numpy as np
     import matplotlib
-    from PIL import Image
-   
-    im = Image.open(imagePath)
-    nim = np.array(im)
     
-    grayscale = 0.2125 * nim[:,:,0] + 0.7514 * nim[:,:,1] + 0.0721 * nim[:,:,2]
-    matplotlib.pyplot.imshow(grayscale, cmap = 'gray')
-
-    return grayscale
-
+    # pseudorandom number 
+    randNum = 0  
+    
+    for i in range(len(im)):
+        for j in range(len(im[0])):
+            # generate a pseudorandom number
+            randNum = random.random()
+            
+            # if number falls between 0 and p, make pixel white
+            if randNum < p:
+                im[i,j] = 1
+            # if number is between p and 2*p, make pixel black
+            elif randNum >= p and randNum < 2*p:
+                im[i,j] = 0
+            
+            # otherwise, leave as-is
+    matplotlib.pyplot.imshow(im, cmap = 'gray')
+    return np.array(im)
 
 """
 Challenge 1: Will blur a grayscale image (remove noise) using either Mean or Gaussian Filtering
@@ -118,7 +133,7 @@ def detect_edge(image, option = 'b'):
             edgeImage[i,j] = edgeValue
     
     matplotlib.pyplot.imshow(edgeImage, cmap = 'gray')    
-    return edgeImage
+    return np.array(edgeImage)
 
 """
 Challenge 3: Will split a grayscale image into foreground and highground using the Otsu Threshold method
@@ -171,7 +186,7 @@ def otsu_threshold(image):
             returnMask[i,j] = True if nim[i,j] <= maxVar[0] else False
             
     matplotlib.pyplot.imshow(returnMask, cmap = 'gray')   
-    return returnMask
+    return np.array(returnMask, dtype = np.bool)
 
 """
 Challenge 4: Will locate the background of an image and blur it
@@ -199,3 +214,42 @@ def blur_background(image):
     matplotlib.pyplot.imshow(blurredImage, cmap = 'gray')   
     
     return blurredImage
+    
+
+
+
+"""
+Takes an image path and returns a numpy array representing the image in grayscale
+"""
+def grayscale(imagePath): 
+    import numpy as np
+    import matplotlib
+    from PIL import Image
+   
+    im = Image.open(imagePath)
+    nim = np.array(im)
+    
+    grayscale = 0.2125 * nim[:,:,0] + 0.7514 * nim[:,:,1] + 0.0721 * nim[:,:,2]
+    matplotlib.pyplot.imshow(grayscale, cmap = 'gray')
+
+    return np.array(grayscale)
+
+"""
+creates a simple image that has at least 3 colors as well as horizontal/vertical/diagonal edges
+"""
+def createSimpleImage():
+    import numpy as np   
+    import matplotlib
+    
+    im = np.zeros((200,200))
+    im[25:-25, 25:-25] = 1
+    
+    for i in range(25, len(im)):
+        im[i,i:50] = 0.25
+        
+    for i in range(25, len(im) - 25):
+        for j in range(25, i):
+            im[i,j] = .60
+            
+    matplotlib.pyplot.imshow(im, cmap = 'gray')
+    return np.array(im)
