@@ -120,7 +120,7 @@ def quick_sort(numList):
     shuffle(numList)
     
     # call helper function to perform sort
-    return quickSort(numList, 0, len(numList) -1)
+    return quickSort(numList, 0, len(numList) - 1)
     
 """
 @function quickSort: helper function o quick_sort. Performs the sorting logic.
@@ -132,7 +132,10 @@ def quick_sort(numList):
 def quickSort(numList, lo, hi):
     if hi >= lo:
     
+        # find pivot
         pivotIndex = partition(numList, lo, hi)
+        
+        # sort the left and right sides using the pivot to split up the array
         quickSort(numList, lo, pivotIndex - 1)
         quickSort(numList, pivotIndex + 1, hi)
     
@@ -146,19 +149,24 @@ def quickSort(numList, lo, hi):
 @return : index of the pivot that partitioned numList
 """
 def partition(numList, lo, hi):
-    
-    if lo >= hi:
-        return lo
-    
     # select first item to be pivot. Since List was presumably shuffled earlier, reduced chance of terrible pivot
     pivot = numList[lo]
     
     index1 = lo + 1
     index2 = hi
     
+    # if list of size 2, just do simple swap
+    if index1 >= index2:
+        if pivot > numList[index2]:
+            numList[lo], numList[index2] = numList[index2], numList[lo]
+            return index2
+        else:
+            return lo
+    
     while True:
+
         # start from left side of the list
-        while numList[index1] <= pivot:
+        while numList[index1] <= pivot and index1 <= index2:
             # keep going until we find an element larger than the pivot
             index1 += 1
             
@@ -167,7 +175,7 @@ def partition(numList, lo, hi):
                 break
 
         # do the same starting from the end of the list. find a value that is less than the pivot
-        while numList[index2] >= pivot:
+        while numList[index2] >= pivot and index2 >= index1:
             index2 -= 1
             
             if index2 == lo:
@@ -193,4 +201,93 @@ End Challenge 1
 
 """
 Challange 2
+"""
+
+"""
+@function performanceTest: 
+@param n: natural number. Will be the highest size of data we consider in performance test
+#param k: natural numer. Number of trials done for each length of trial data
+@return will display a plot of the different times for the four different sorts
+"""
+def performanceTest(n, k):
+    import random
+    import matplotlib.pyplot as plt
+    import time
+    
+    # create a datapoint for a dataset of size 1, 2, 3, ... up to size n
+    for i in range(0,n):
+        
+        selectionTime = 0
+        bubbleTime = 0
+        mergeTime = 0
+        quickTime = 0
+        
+        # will run the test k times per sort
+        for _ in range(k):
+            
+            # create a list of n natural numbers
+            randList = random.sample(range(0,i), i)
+
+            # test Bubble Sort
+            start = time.perf_counter()
+            bubble_sort(randList)
+            end = time.perf_counter()
+            bubbleTime += (end - start)
+            
+            # create a list of n natural numbers
+            randList = random.sample(range(0,i), i)
+            
+            # test selection Sort
+            start = time.perf_counter()
+            select_sort(randList)
+            end = time.perf_counter()
+            selectionTime += (end - start)
+            
+            # create a list of n natural numbers
+            randList = random.sample(range(0,i), i)
+            
+            # test merge Sort
+            start = time.perf_counter()
+            merge_sort(randList)
+            end = time.perf_counter()
+            mergeTime += (end - start)
+            
+            # create a list of n natural numbers
+            randList = random.sample(range(0,i), i)
+            
+            # test quick Sort
+            start = time.perf_counter()
+            quick_sort(randList)
+            end = time.perf_counter()
+            quickTime += (end - start)
+            
+        # average sorting times
+        bubbleTime /= k
+        selectionTime /= k
+        mergeTime /= k
+        quickTime /= k
+        
+        if i == n-1:
+            plt.plot(i, bubbleTime, 'o', color = 'blue', label = 'Bubble Sort')
+            plt.plot(i, selectionTime, 'o', color = 'red', label = 'Selection Sort')
+            plt.plot(i, mergeTime, 'o', color = 'orange', label = 'Merge Sort')
+            plt.plot(i, quickTime, 'o', color = 'purple', label = 'Quick Sort')
+        else:
+            plt.plot(i, bubbleTime, 'o', color = 'blue')
+            plt.plot(i, selectionTime, 'o', color = 'red')
+            plt.plot(i, mergeTime, 'o', color = 'orange')
+            plt.plot(i, quickTime, 'o', color = 'purple')
+
+    
+    plt.xlim([-1, n])
+    plt.legend(loc = 'upper right')
+        
+    plt.xlabel('List Length')
+    plt.ylabel('Time')
+            
+    return
+
+
+"""
+End Challange 2
 """
