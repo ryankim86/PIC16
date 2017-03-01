@@ -2,7 +2,7 @@
 """
 Created on Mon Feb 27 21:00:06 2017
 
-@author: ryan
+@author: Ryan Kim
 """
 
 """
@@ -204,7 +204,7 @@ Challange 2
 """
 
 """
-@function performanceTest: 
+@function performanceTest: plots the times for sorting of the four sorting algorithms implemented in Challenge 1
 @param n: natural number. Will be the highest size of data we consider in performance test
 #param k: natural numer. Number of trials done for each length of trial data
 @return will display a plot of the different times for the four different sorts
@@ -282,12 +282,106 @@ def performanceTest(n, k):
     plt.xlim([-1, n])
     plt.legend(loc = 'upper right')
         
-    plt.xlabel('List Length')
+    plt.xlabel('List Length (' + str(k) + ' trials per Length)' )
     plt.ylabel('Time')
             
     return
 
-
 """
 End Challange 2
 """
+
+"""
+Challenge 3
+"""
+
+N=[[0,3,1,0,0,6],[3,0,1,1,0,0],[1,1,0,0,2,0],[0,1,0,0,1,2],[0,0,2,1,0,1],[6,0,0,2,1,0]]
+
+"""
+@function dijkstra_shortestpath: calculates the shortest path from v to w
+Based off pseudocode from: https://en.wikipedia.org/wiki/Dijkstra's_algorithm
+@param N: numpy array representing the network to find path 
+@param v: index of start vertex
+@param w: index of end vertex
+@return : list containing the shortest path from v to w. If no such path exists, it will return an empty list
+
+"""
+def dijkstra_shortestpath(N, v, w):
+    import numpy as np
+    
+    N = np.array(N)
+    
+    # create a dictionaries to keep track of nodes
+    distance = {v:0}
+    prevNode = {}
+    Q = [v]
+    
+    # store unvisited nodes. 
+    for i in range(len(N)):
+        if i != v:
+            """
+            -1 in place of infinity. Technically, bad practice, but 
+            should work because alg. only works for positives weights.
+            """
+            distance[i] = -1
+            Q.append(i)
+    
+    currNode = v
+    
+    while len(Q) != 0:
+        
+        # find vertex with minimum distance
+        nonInfiniteNodes = []
+        for value in Q:
+            if distance[value] != -1: 
+                nonInfiniteNodes.append(value)
+        currNode = min(nonInfiniteNodes)
+        
+        # node has been visisted
+        Q.remove(currNode)
+        
+        # find neighbors of u:
+        neighbors = []
+        for i in range(len(N[currNode])):
+            if N[currNode, i] > 0:
+                neighbors.append(i)
+        
+        # look at the neighbors of the current node
+        for node in neighbors:
+            
+            # calculate the distance from start to neighbor on THIS path
+            alt = distance[currNode] + N[currNode, node]
+            
+            # if path distance has been set previously
+            if distance[node] != -1:
+                # if this new distance is less than currently stored distance, replace
+                if alt < distance[node]:
+                    distance[node] = alt
+                    prevNode[node] = currNode
+                    
+            # if no distance path has been calculated previously, set distance
+            else:
+                distance[node] = alt
+                prevNode[node] = currNode
+    
+    # recreate the path going through the previous nodes
+    path = []
+    trackNode = w
+    
+    # if no prev node defined for the
+    if trackNode not in prevNode:
+        return []
+    
+    # keep going through shortest path's previous nodes until we get to beginning
+    while trackNode in prevNode:
+        path.insert(0, trackNode)
+        trackNode = prevNode[trackNode]
+        
+    # if never make it to the start, no path exists
+    if trackNode != v:
+        return []
+    # otherwise, add the start node back in.
+    else:
+        path.insert(0, trackNode)
+            
+    return path
