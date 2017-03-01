@@ -403,13 +403,8 @@ def two_sat(expr):
     import sympy as sp
     import numpy as np
     
-    """
-    Note to the Grader: Sorry for this disgusting code. I ran out of time, so I had to brute force it.
-    """
-    
     # length of network that will be used to find satisfiability 
     n = len(expr.atoms())
-    print(n)
     var = list(expr.atoms())
 
     network = np.zeros((2*n, 2*n))
@@ -419,118 +414,64 @@ def two_sat(expr):
     symbolIndex = {}
     for i in range(n):
         symbolIndex[var[i]] = i
+        symbolIndex[sp.Not(var[i])] = i + n        
+    print(symbolIndex)
     
     # create the network associated with the expression
     for i in range(len(expr.args)):
         
-        firstLiteralNeg = False
-        secondLiteralNeg = False
+        # we know there will only be 2 literals per block
+        lit1 = expr.args[i].args[0]
+        lit2 = expr.args[i].args[1]
         
-        symbols = list(expr.args[i].atoms())
-        print(i,symbols)
+        # populate network using (x|y) = (~x => y) = (~y => x)
+        row = symbolIndex[sp.Not(lit1)]
+        column = symbolIndex[lit2]
+        network[row, column] = 1
         
-        # we know each one of these args should be an Or block
-        for j in range(len(expr.args[i].args)):
-            
-            if expr.args[i].subs({symbols[j] : False}) == True:
-                if j == 0:
-                    firstLiteralNeg = True
-                elif j == 1:
-                    secondLiteralNeg = True
-        
-        # (x|y)
-        if not firstLiteralNeg and not secondLiteralNeg:
-            
-            # (x|y) = (~x => y) 
-            row = symbolIndex[symbols[0]] + n
-            column = symbolIndex[symbols[1]]
-            network[row, column] = 1
-            
-            # (x|y) = (~y => x)
-            row = symbolIndex[symbols[1]] + n
-            column = symbolIndex[symbols[0]]
-            network[row, column] = 1
-            
-        # (x|~y) 
-        elif not firstLiteralNeg and secondLiteralNeg:
-            
-            # (x|~y) = (~x => ~y)
-            row = symbolIndex[symbols[0]] + n
-            column = symbolIndex[symbols[1]] + n
-            network[row, column] = 1
-            
-            # (x|~y) = (y => x)
-            row = symbolIndex[symbols[1]]
-            column = symbolIndex[symbols[0]]
-            network[row, column] = 1
-            
-        # (~x|y)
-        elif firstLiteralNeg and not secondLiteralNeg:
-            # (~x|y) = (~y => ~x)
-            row = symbolIndex[symbols[1]] + n
-            column = symbolIndex[symbols[0]] + n
-            network[row, column] = 1
-            
-            # (~x|y) = (x => y)
-            row = symbolIndex[symbols[0]]
-            column = symbolIndex[symbols[1]]
-            network[row, column] = 1
-            
-        # (~x|~y)
-        else:
-            # (~x|~y) = (y => ~x)
-            row = symbolIndex[symbols[1]]
-            column = symbolIndex[symbols[0]] + n
-            network[row, column] = 1
-            
-            # (~x|~y) = (x => ~y)
-            row = symbolIndex[symbols[0]]
-            column = symbolIndex[symbols[1]] + n
-            network[row, column] = 1
-    
-    print(network)
-    
-    toVisit = []
+        row = symbolIndex[sp.Not(lit2)]
+        column = symbolIndex[lit1]
+        network[row, column] = 1
     
     # use depth first search to make sure that we don't have x => ~x and ~x => x
-    for key in symbolIndex:
-        
-        toVisit.append(symbolIndex[key])
-        
-        while len(toVisit) != 0:
-            
-            # look at next value
-            visitIndex = toVisit.pop()
-            
-            # add neighbors to the list
-            for i in range(len(network[visitIndex])):
-                if network[visitIndex, i] == 1:
-                    toVisit.append(i)
-                        
-            if symbolIndex[key] in toVisit:
-                toVisit = []
-                break
-            
-            # found path to ~x
-            if (symbolIndex[key] + n) in toVisit:
-                negPathToVisit = []
-                
-                # check if there is a path from ~x to x
-                negPathToVisit.append(symbolIndex[key] + n)
-                
-                while len(negPathToVisit) != 0:
-                    negIndex = negPathToVisit.pop()
-                    
-                    for i in range(len(network[negIndex])):
-                        if network[negIndex, i] == 1:
-                            negPathToVisit.append(i)
-                    if symbolIndex[key] in negPathToVisit:
-                        print('No Solution')
-                        return
-                    if symbolIndex[key] + n in negPathToVisit:
-                        break
-    
-    print('Satisfiable')
+#    for key in symbolIndex:
+#        
+#        toVisit.append(symbolIndex[key])
+#        
+#        while len(toVisit) != 0:
+#            
+#            # look at next value
+#            visitIndex = toVisit.pop()
+#            
+#            # add neighbors to the list
+#            for i in range(len(network[visitIndex])):
+#                if network[visitIndex, i] == 1:
+#                    toVisit.append(i)
+#                        
+#            if symbolIndex[key] in toVisit:
+#                toVisit = []
+#                break
+#            
+#            # found path to ~x
+#            if (symbolIndex[key] + n) in toVisit:
+#                negPathToVisit = []
+#                
+#                # check if there is a path from ~x to x
+#                negPathToVisit.append(symbolIndex[key] + n)
+#                
+#                while len(negPathToVisit) != 0:
+#                    negIndex = negPathToVisit.pop()
+#                    
+#                    for i in range(len(network[negIndex])):
+#                        if network[negIndex, i] == 1:
+#                            negPathToVisit.append(i)
+#                    if symbolIndex[key] in negPathToVisit:
+#                        print('No Solution')
+#                        return
+#                    if symbolIndex[key] + n in negPathToVisit:
+#                        break
+#    
+#    print('Satisfiable')
     return
             
 """
