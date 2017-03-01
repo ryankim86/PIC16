@@ -395,9 +395,10 @@ Challenge 4
 """
 
 """
-@function two_sat: Evaluates whether a 2-SAT expression can be satisfied
+@function two_sat: Evaluates whether a 2-SAT expression can be satisfied in polynomial time. A pretty inefficient implementation. 
+Fairly sure it has time complexity of O(N**4).
 @expr: a sympy boolean expression in 2-CNF format
-@return: a dictionary using the symbols as keys which map to Boolean values that will satisfy the expression
+@return: If unsatisfiable, will return False. Otherwise, will return a dictionary using the symbols as keys which map to Boolean values that will satisfy the expression. 
 """
 def two_sat(expr):
     import sympy as sp
@@ -409,13 +410,14 @@ def two_sat(expr):
 
     network = np.zeros((2*n, 2*n))
     
-    # since symbols might come in arbitrary order, have the symbols map to a unique index
-    # have the negation be set to (index + n)
+    # since symbols might come in arbitrary order, have the symbols map to a unique index have the negation be set to (index + n)
     symbolIndex = {}
     for i in range(n):
         symbolIndex[var[i]] = i
-        symbolIndex[sp.Not(var[i])] = i + n        
-    print(symbolIndex)
+        symbolIndex[sp.Not(var[i])] = i + n      
+    
+    # create a dictionary gets the symbol based on index
+    matrixSymbol = {v: k for k, v in symbolIndex.items()}
     
     # create the network associated with the expression
     for i in range(len(expr.args)):
@@ -433,46 +435,70 @@ def two_sat(expr):
         column = symbolIndex[lit1]
         network[row, column] = 1
     
-    # use depth first search to make sure that we don't have x => ~x and ~x => x
-#    for key in symbolIndex:
-#        
-#        toVisit.append(symbolIndex[key])
-#        
-#        while len(toVisit) != 0:
-#            
-#            # look at next value
-#            visitIndex = toVisit.pop()
-#            
-#            # add neighbors to the list
-#            for i in range(len(network[visitIndex])):
-#                if network[visitIndex, i] == 1:
-#                    toVisit.append(i)
-#                        
-#            if symbolIndex[key] in toVisit:
-#                toVisit = []
-#                break
-#            
-#            # found path to ~x
-#            if (symbolIndex[key] + n) in toVisit:
-#                negPathToVisit = []
-#                
-#                # check if there is a path from ~x to x
-#                negPathToVisit.append(symbolIndex[key] + n)
-#                
-#                while len(negPathToVisit) != 0:
-#                    negIndex = negPathToVisit.pop()
-#                    
-#                    for i in range(len(network[negIndex])):
-#                        if network[negIndex, i] == 1:
-#                            negPathToVisit.append(i)
-#                    if symbolIndex[key] in negPathToVisit:
-#                        print('No Solution')
-#                        return
-#                    if symbolIndex[key] + n in negPathToVisit:
-#                        break
-#    
-#    print('Satisfiable')
-    return
+    discovered = {}
+    
+    for key in symbolIndex:
+        discovered[key] = False
+    
+    # use depth first search for each symbol to make sure that we don't have x => ~x and ~x => x
+    returnValue = {}
+    toVisit = []
+    for symbol in var:
+        
+        # reset what has been discovered
+        for key in symbolIndex:
+            discovered[key] = False
+            
+        # add first symbol to stack of nodes to be visisted
+        toVisit.append(symbol)
+        
+        # start the search
+        while len(toVisit) != 0:
+            
+            # take the most recently added item and search from there
+            visit = toVisit.pop()
+            
+            """
+            if path leads to negation of first symbal, start a second DFS to see if there is a cycle
+            This is probably the worst way to do this, but just trying to brute force it at this point
+            """
+            if visit == sp.Not(symbol):
+                
+                # reset what has been discovered
+                for key in symbolIndex:
+                    discovered[key] = False
+                    
+                    nToVisit = []
+                    nToVisit.append(sp.Not(symbol))
+                    
+                    while len(nToVisit) != 0:
+                        nVisit = nToVisit.pop()
+                        
+                        # if there is a cycle, then NOT satisfiable
+                        if nVisit == symbol:
+                            return False
+                        
+                        # otherwise, visit a node if it has not been explored yet
+                        if not discovered[nVisit]:
+                            discovered[nVisit] = True
+                            
+                            # add neighbors to list of nodes to be visisted
+                            for i in range(len(network[symbolIndex[nVisit]])):
+                                if network[symbolIndex[nVisit], i] == 1:
+                                    nToVisit.append(matrixSymbol[i])
+            
+            # if next node was NOT the negation, then continue DFS 
+            if not discovered[visit]:
+                discovered[visit] = True
+
+                #check neighbors
+                for i in range(len(network[symbolIndex[visit]])):
+                    if network[symbolIndex[visit], i] == 1:
+                        toVisit.append(matrixSymbol[i])
+                        returnValue[matrixSymbol[i]] = True
+                                  
+    return returnValue
+
             
 """
 End Challenge 4
