@@ -410,13 +410,13 @@ def two_sat(expr):
 
     network = np.zeros((2*n, 2*n))
     
-    # since symbols might come in arbitrary order, have the symbols map to a unique index have the negation be set to (index + n)
+    # since symbols might come in arbitrary order, have the symbols map to a unique index. Negations will map to (index + n)
     symbolIndex = {}
     for i in range(n):
         symbolIndex[var[i]] = i
         symbolIndex[sp.Not(var[i])] = i + n      
     
-    # create a dictionary gets the symbol based on index
+    # create a dictionary that gets the symbol based on index
     matrixSymbol = {v: k for k, v in symbolIndex.items()}
     
     # create the network associated with the expression
@@ -435,22 +435,26 @@ def two_sat(expr):
         column = symbolIndex[lit1]
         network[row, column] = 1
     
-    discovered = {}
+
     
+    # use depth first search for each symbol to make sure that we don't have x => ~x and ~x => x
+    toVisit = []
+    path = []
+    
+    discovered = {}
     for key in symbolIndex:
         discovered[key] = False
     
-    # use depth first search for each symbol to make sure that we don't have x => ~x and ~x => x
-    returnValue = {}
-    toVisit = []
     for symbol in var:
         
         # reset what has been discovered
+        path = []
         for key in symbolIndex:
             discovered[key] = False
             
         # add first symbol to stack of nodes to be visisted
         toVisit.append(symbol)
+
         
         # start the search
         while len(toVisit) != 0:
@@ -490,15 +494,30 @@ def two_sat(expr):
             # if next node was NOT the negation, then continue DFS 
             if not discovered[visit]:
                 discovered[visit] = True
+                path.append(visit)
 
                 #check neighbors
                 for i in range(len(network[symbolIndex[visit]])):
                     if network[symbolIndex[visit], i] == 1:
                         toVisit.append(matrixSymbol[i])
-                        returnValue[matrixSymbol[i]] = True
-                                  
-    return returnValue
-
+                        
+        # if we find a path that connects all of the n symbols, then we have found a solution
+        if len(path) == n:
+            
+            # create a dictionary
+            returnDict = {}
+            
+            for symbol in path:
+                
+                # if you negate the symbol and it is one of the atoms of the expression, then it should be false
+                if sp.Not(symbol) in var:
+                    returnDict[sp.Not(symbol)] = False
+                    
+                # otherwise, value should be true
+                else:
+                    returnDict[symbol] = True
+                    
+            return returnDict
             
 """
 End Challenge 4
