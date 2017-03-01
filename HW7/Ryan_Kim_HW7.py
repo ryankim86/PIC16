@@ -5,9 +5,13 @@ Created on Mon Feb 27 21:00:06 2017
 @author: Ryan Kim
 """
 
+import sympy as sp
+
 """
 Challenge 1: Selection, Bubble, Quick, and Merge Sorts for real numbers
 """
+
+L=[2,7,4,9,2]
 
 """
 @function selection_sort: sorts numbers using selection sort. Selects the smallest value of subarrays and places them in the correct position. Time complexity O(N**2)
@@ -52,7 +56,7 @@ def bubble_sort(numList):
     return numList
       
 """
-@function merge_sort: sorts numbers using Merge Sort algorithm. Recursively divides List into halfs and then recreate them sorted. Time Complexity O(N*Log(N))
+@function merge_sort: sorts numbers using the Merge Sort algorithm. Recursively divides List into halfs and then recreate them sorted. Time Complexity O(N*Log(N))
 @param numList: a list of real numbers
 @return : a list of real numbers sorted in nondecreasing order
 """
@@ -72,13 +76,12 @@ def merge_sort(numList):
         return merge(merge_sort(left), merge_sort(right))
     
 """
-@function merge: takes two sorted List and creates a sorted List using all of the elements in the original two Lists.
-It acheives this by comparing the front of the two Lists and seeing which is smaller.
+@function merge: Helper Function for merge_sort(). Takes two sorted List and creates a sorted List using all of the elements in the original two Lists.
+It acheives this by comparing the front of the two Lists and seeing which is smaller and adding that to a new list. 
 @param list1: a sorted list of real numbers
 @param list2: a sorted list of real numbers
 @return : sorted list created form the contents of list1 and list2
 """
-
 def merge(list1, list2):
     
     sortedList = []
@@ -123,13 +126,15 @@ def quick_sort(numList):
     return quickSort(numList, 0, len(numList) - 1)
     
 """
-@function quickSort: helper function o quick_sort. Performs the sorting logic.
+@function quickSort: helper function for quick_sort. Performs the sorting logic.
 @param numList: list of numbers
 @param lo: lowest index in range
 @param hi: highest index in range
 @return sorted List of numbers
 """
 def quickSort(numList, lo, hi):
+    
+    # make sure indices make sense
     if hi >= lo:
     
         # find pivot
@@ -149,6 +154,7 @@ def quickSort(numList, lo, hi):
 @return : index of the pivot that partitioned numList
 """
 def partition(numList, lo, hi):
+    
     # select first item to be pivot. Since List was presumably shuffled earlier, reduced chance of terrible pivot
     pivot = numList[lo]
     
@@ -163,6 +169,7 @@ def partition(numList, lo, hi):
         else:
             return lo
     
+    # otherwise, perform partitioning logic
     while True:
 
         # start from left side of the list
@@ -214,6 +221,12 @@ def performanceTest(n, k):
     import matplotlib.pyplot as plt
     import time
     
+    bubble = []
+    select = []
+    merge = []
+    quick = []
+    x = []
+    
     # create a datapoint for a dataset of size 1, 2, 3, ... up to size n
     for i in range(0,n):
         
@@ -226,7 +239,9 @@ def performanceTest(n, k):
         for _ in range(k):
             
             # create a list of n natural numbers
-            randList = random.sample(range(0,i), i)
+            original = random.sample(range(0,i), i)
+            
+            randList = original
 
             # test Bubble Sort
             start = time.perf_counter()
@@ -234,8 +249,7 @@ def performanceTest(n, k):
             end = time.perf_counter()
             bubbleTime += (end - start)
             
-            # create a list of n natural numbers
-            randList = random.sample(range(0,i), i)
+            randList = original
             
             # test selection Sort
             start = time.perf_counter()
@@ -243,8 +257,7 @@ def performanceTest(n, k):
             end = time.perf_counter()
             selectionTime += (end - start)
             
-            # create a list of n natural numbers
-            randList = random.sample(range(0,i), i)
+            randList = original
             
             # test merge Sort
             start = time.perf_counter()
@@ -252,8 +265,7 @@ def performanceTest(n, k):
             end = time.perf_counter()
             mergeTime += (end - start)
             
-            # create a list of n natural numbers
-            randList = random.sample(range(0,i), i)
+            randList = original
             
             # test quick Sort
             start = time.perf_counter()
@@ -267,23 +279,24 @@ def performanceTest(n, k):
         mergeTime /= k
         quickTime /= k
         
-        if i == n-1:
-            plt.plot(i, bubbleTime, 'o', color = 'blue', label = 'Bubble Sort')
-            plt.plot(i, selectionTime, 'o', color = 'red', label = 'Selection Sort')
-            plt.plot(i, mergeTime, 'o', color = 'orange', label = 'Merge Sort')
-            plt.plot(i, quickTime, 'o', color = 'purple', label = 'Quick Sort')
-        else:
-            plt.plot(i, bubbleTime, 'o', color = 'blue')
-            plt.plot(i, selectionTime, 'o', color = 'red')
-            plt.plot(i, mergeTime, 'o', color = 'orange')
-            plt.plot(i, quickTime, 'o', color = 'purple')
-
+        x.append(i)
+        bubble.append(bubbleTime)
+        select.append(selectionTime)
+        merge.append(mergeTime)
+        quick.append(quickTime)
     
+    # plot the times
+    plt.plot(x, bubble, '-', color = 'blue', label = 'Bubble Sort')
+    plt.plot(x, select, '-', color = 'red', label = 'Selection Sort')
+    plt.plot(x, merge, '-', color = 'orange', label = 'Merge Sort')
+    plt.plot(x, quick, '-', color = 'purple', label = 'Quick Sort')
+    
+    # set up plot
     plt.xlim([-1, n])
-    plt.legend(loc = 'upper right')
-        
+    plt.legend(loc = 'upper left')
+    plt.title('Time Performance of Sorting Algorithms')
     plt.xlabel('List Length (' + str(k) + ' trials per Length)' )
-    plt.ylabel('Time')
+    plt.ylabel('Time (sec)')
             
     return
 
@@ -320,7 +333,7 @@ def dijkstra_shortestpath(N, v, w):
     for i in range(len(N)):
         if i != v:
             """
-            -1 in place of infinity. Technically, bad practice, but 
+            -1 in place of infinity. Technically bad practice, but 
             should work because alg. only works for positives weights.
             """
             distance[i] = -1
@@ -364,7 +377,7 @@ def dijkstra_shortestpath(N, v, w):
                 distance[node] = alt
                 prevNode[node] = currNode
     
-    # recreate the path going through the previous nodes
+    # recreate the path by going through the previous nodes
     path = []
     trackNode = w
     
@@ -394,14 +407,18 @@ End Challenge 3
 Challenge 4
 """
 
+x0,x1,x2,x3,x4=sp.symbols('x0:5')
+
+F1=(~x0 | x3) & (x2 | x4) & (x3 | ~x4) & (~x2 | ~ x3) & (~x0 | x4) 
+
+F2=(~x0 | ~x3) & (x2 | x4) & (x3 | ~x4) & (~x2 | x3) & (~x0 | x4) & (x2 | ~x3) & (~x2 | x0)
+
 """
 @function two_sat: Evaluates whether a 2-SAT expression can be satisfied in polynomial time. A pretty inefficient implementation. 
-Fairly sure it has time complexity of O(N**4).
 @expr: a sympy boolean expression in 2-CNF format
 @return: If unsatisfiable, will return False. Otherwise, will return a dictionary using the symbols as keys which map to Boolean values that will satisfy the expression. 
 """
 def two_sat(expr):
-    import sympy as sp
     import numpy as np
     
     # length of network that will be used to find satisfiability 
@@ -426,16 +443,15 @@ def two_sat(expr):
         lit1 = expr.args[i].args[0]
         lit2 = expr.args[i].args[1]
         
-        # populate network using (x|y) = (~x => y) = (~y => x)
+        # populate network using (x|y) = (~x => y) equivalence relation
         row = symbolIndex[sp.Not(lit1)]
         column = symbolIndex[lit2]
         network[row, column] = 1
         
+        # do the same using (x|y) = (~y => x) equivalence relation
         row = symbolIndex[sp.Not(lit2)]
         column = symbolIndex[lit1]
         network[row, column] = 1
-    
-
     
     # use depth first search for each symbol to make sure that we don't have x => ~x and ~x => x
     toVisit = []
@@ -455,7 +471,6 @@ def two_sat(expr):
         # add first symbol to stack of nodes to be visisted
         toVisit.append(symbol)
 
-        
         # start the search
         while len(toVisit) != 0:
             
@@ -464,7 +479,7 @@ def two_sat(expr):
             
             """
             if path leads to negation of first symbal, start a second DFS to see if there is a cycle
-            This is probably the worst way to do this, but just trying to brute force it at this point
+            This is probably not the best way to do this, but just trying to brute force it at this point
             """
             if visit == sp.Not(symbol):
                 
@@ -491,7 +506,7 @@ def two_sat(expr):
                                 if network[symbolIndex[nVisit], i] == 1:
                                     nToVisit.append(matrixSymbol[i])
             
-            # if next node was NOT the negation, then continue DFS 
+            # if next node was NOT the negation we're looking for, then continue DFS 
             if not discovered[visit]:
                 discovered[visit] = True
                 path.append(visit)
