@@ -24,12 +24,16 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(804, 602)
+        #MainWindow.resize(804, 602)
+        MainWindow.resize(800, 600)
+        
+        
+        
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setStyleSheet(_fromUtf8("QWidget { background: #d8d8d2}"))
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 0, 801, 561))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 0, 800, 600))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Impact"))
         font.setPointSize(28)
