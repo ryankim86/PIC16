@@ -251,12 +251,18 @@ class Ui_MainWindow(object):
         self.menuMenu.addAction(self.actionReset)
         self.menuMenu.addAction(self.actionUndo)
         self.menubar.addAction(self.menuMenu.menuAction())
+        
+        # dialog box to tell user that they lost
+        self.msg = QtGui.QMessageBox()
+        self.msg.setIcon(QtGui.QMessageBox.Critical)
+        self.msg.setText('You Lost! Please press retry to try again')
+        self.msg.setStandardButtons(QtGui.QMessageBox.Retry)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "2048", None))
         self.lb14.setText(_translate("MainWindow", "", None))
         self.lb15.setText(_translate("MainWindow", "", None))
         self.lb12.setText(_translate("MainWindow", "", None))
@@ -282,9 +288,23 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         super(MyGui, self).__init__()
         self.setupUi(self)
         
-        # create a matrix that will store the values of the tiles behind the GUI
-        self.tiles = np.zeros((4,4), dtype = np.int)
+        # create a dictionary that will map directions
+        self.direc = {'up': {'x' : 0, 'y' : -1}, 'right': {'x' : 1, 'y' : 0}, 'down': {'x' : 0, 'y' : 1}, 'left': {'x' : -1, 'y' : 0}}
         
+        # another dictionary that will map values to colors
+        self.colorDict = { 2: 'yellow', 4: '#4286f4', 8: '#f442b0', 16: '#22cc93', 32: '#cca422', 64: '#cc2b22', 128: '#e56778', 256: '#9967e5', 512: '#67dde5', 1024: '#e3e567', 2048: '#ff0000'  }
+        
+        # create game
+        self.initGame()
+        
+        # connect signal so that we can undo moves or reset
+        self.actionUndo.triggered.connect(self.undo)
+        self.actionReset.triggered.connect(self.initGame)
+        
+    def initGame(self):
+         # create a matrix that will store the values of the tiles behind the GUI
+        self.tiles = np.zeros((4,4), dtype = np.int)
+
         # select two starting points for initial tiles
         point1 = (random.randint(0,3), random.randint(0,3))
         point2 = (random.randint(0,3), random.randint(0,3))
@@ -293,20 +313,30 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         while point1 == point2:
             point2 = (random.randint(0,3), random.randint(0,3))
             
-        # update tiles 
-        self.tiles[point1[0], point1[1]] = 2 if random.random() <= 0.60 else 4
-        self.tiles[point2[0], point2[1]] = 2 if random.random() <= 0.60 else 4
-        self.gridLayout.itemAtPosition(point1[0], point1[1]).widget().setText(_translate("MainWindow", str(self.tiles[point1[0], point1[1]]), None))
-        self.gridLayout.itemAtPosition(point2[0], point2[1]).widget().setText(_translate("MainWindow", str(self.tiles[point2[0], point2[1]]), None))
+#        self.tiles[point1] = 2 if random.random() <= 0.60 else 4
+#        self.tiles[point2] = 2 if random.random() <= 0.60 else 4
+#        self.score = max(self.tiles[point1], self.tiles[point2])
+#        
+#        self.gridLayout.itemAtPosition(point1[0], point1[1]).widget().setText(_translate("MainWindow", str(self.tiles[point1[0], point1[1]]), None))
+#        self.gridLayout.itemAtPosition(point2[0], point2[1]).widget().setText(_translate("MainWindow", str(self.tiles[point2[0], point2[1]]), None))
+        
+        self.tiles = np.array([[2,  4,  8,  16], [ 4,  8,  16,  32], [8,  16,  32,  64,], [16,  32,  64,  0]])
+        self.lastMove = self.tiles
+        
+        self.nonZeroEntries = np.count_nonzero(self.tiles)
+        self.updateTiles()
         
     # function that will update values of the tiles displayed
     def updateTiles(self):
-        for i in range(4):
-            for j in range(4):
+        for i in xrange(4):
+            for j in xrange(4):
                 if self.tiles[i,j] != 0:
                     self.gridLayout.itemAtPosition(i,j).widget().setText(_translate("MainWindow", str(self.tiles[i,j]), None))
+                    color = 'QLabel { background:' + str(self.colorDict[self.tiles[i,j]]) + '}'
+                    self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet(_fromUtf8(color))
                 else:
                     self.gridLayout.itemAtPosition(i,j).widget().setText(_translate("MainWindow", "", None))
+                    self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         return
                 
     def addRandomTile(self):
@@ -322,26 +352,128 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         # randomly select one of the locations to place the new tile
         choice = random.randint(0,len(possibleLocation[0])-1)
         
+        # place new tile
         self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]] = 2 if random.random() <= 0.50 else 4
         self.gridLayout.itemAtPosition(possibleLocation[0][choice],possibleLocation[1][choice]).widget().setText(_translate("MainWindow", str(self.tiles[possibleLocation[0][choice],possibleLocation[1][choice]]), None))
-        return
+        color = 'QLabel { background:' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]) + '}'
+        self.gridLayout.itemAtPosition(possibleLocation[0][choice],possibleLocation[1][choice]).widget().setStyleSheet(_fromUtf8(color))
+        self.nonZeroEntries += 1
         
+        if self.nonZeroEntries == 16:
+            if self.isMoveAvailable():
+                print 'keep going'
+            else:
+                self.lose()
+        
+        return
         
     def moveTiles(self, direction):
-        return
+        
+        # work on making sure things don't mess up or w/e
+        print direction, 'before:'
+        print self.tiles
+        colMov = self.direc[direction]['x']
+        rowMov = self.direc[direction]['y']
+
+        # build list of positions to travel in the correct order
+        tileOrder = []
+        
+        # right most
+        if colMov != 0:
+            for i in xrange(4):
+                for j in xrange(3, -1, -1):
+                    if self.tiles[i,j] != 0:
+                        tileOrder.append((i,j))
+        
+        # lowest
+        elif rowMov != 0:
+            for i in xrange(3, -1, -1):
+                for j in xrange(4):
+                    if self.tiles[i,j] != 0:
+                        tileOrder.append((i,j))
+            
+        # switch to leftmost or highest depending on direction
+        if  colMov == -1 or rowMov == -1:
+            tileOrder.reverse()
+           
+        for currTile in tileOrder:
+            
+            # tile next to one that is being moved
+            nextTile = (currTile[0] + rowMov, currTile[1] + colMov)
+
+            # do not move tiles that are already on an edge
+            if nextTile[0] > 3 or nextTile[0] < 0 or nextTile[1] > 3 or nextTile[1] < 0:
+                continue
+            
+            # find position to put tile (not super efficient, but this process will take at most 3 steps)
+            while self.tiles[nextTile] == 0:
+                # stop if the position tile is supposed to move to is an edge
+                if nextTile[0] + rowMov > 3 or nextTile[0] + rowMov < 0 or nextTile[1] + colMov > 3 or nextTile[1] + colMov < 0:
+                    break
+                nextTile = (nextTile[0] + rowMov, nextTile[1] + colMov)
+
+            # if two tiles with same value collide, add the values together
+            if self.tiles[currTile] == self.tiles[nextTile]:
+                self.tiles[nextTile] *= 2
+                self.tiles[currTile] = 0
+                self.nonZeroEntries -= 1
+
+            else:
+                # if there is already a tile in the position furthest in that direction, place tile in spot before it
+                if self.tiles[nextTile] != 0:
+                    nextTile = (nextTile[0] - rowMov, nextTile[1] - colMov)
+                
+                # change value
+                self.tiles[nextTile] = self.tiles[currTile]
+
+                # to prevent tiles from being erased if they don't move
+                if currTile != nextTile:
+                    self.tiles[currTile] = 0
+        
+        self.updateTiles()
+        self.addRandomTile()
+        print 'lastmove:\n', self.lastMove
+    
+    # create a method that checks if there are any moves left that will be called when there are 16 pieces on the board
+    def isMoveAvailable(self):
+        
+        # for each tile
+        for i in xrange(0,3):
+            for j in xrange(0,3):
+                tile = (i,j)
+                
+                # check all four directions
+                for direction in self.direc:
+                    nextTile = (tile[0] + self.direc[direction]['y'], tile[1] + self.direc[direction]['x'])
+                    
+                    # tiles can be merged; move available
+                    if self.tiles[tile] == self.tiles[nextTile]:
+                        return True
+        # otherwise,
+        return False
+         
+    def undo(self):
+        print 'undo'
+        self.tiles = self.lastMove
+        self.updateTiles()
+    
+    def lose(self):
+        self.msg.buttonClicked.connect(self.initGame)
+        self.msg.exec_()
         
     def keyPressEvent(self, key):
-        if key.key() == QtCore.Qt.Key_Left:
-            self.gridLayout.itemAtPosition(0,1).widget().setText(_translate("MainWindow", "18", None))
-        if key.key() == QtCore.Qt.Key_Right:
-            print 'right'
+        self.lastMove = np.array(self.tiles)  
         if key.key() == QtCore.Qt.Key_Up:
-            print 'up'
-        if key.key() == QtCore.Qt.Key_Down:
-            self.addRandomTile()
-            
+            self.moveTiles('up')
+        elif key.key() == QtCore.Qt.Key_Right:
+            self.moveTiles('right')
+        elif key.key() == QtCore.Qt.Key_Down:
+            self.moveTiles('down')
+        elif key.key() == QtCore.Qt.Key_Left:
+            self.moveTiles('left')
+        return
 
- 
+            
 if __name__ == '__main__':
     from PyQt4 import QtGui, QtCore
     import numpy as np
