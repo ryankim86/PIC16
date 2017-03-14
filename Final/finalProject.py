@@ -44,7 +44,7 @@ class Ui_MainWindow(object):
         self.vertLayout = QtGui.QVBoxLayout(self.vertLayoutWidget)  
         
         # create game title
-        font = QtGui.QFont(_fromUtf8("Helvetica Neue"), pointSize = 36)
+        font = QtGui.QFont(_fromUtf8("Helvetica"), pointSize = 36)
         self.title = QtGui.QLabel(self.vertLayoutWidget)
         self.title.setText('2048')
         self.title.setFont(font)
@@ -52,12 +52,20 @@ class Ui_MainWindow(object):
         self.title.setAlignment(QtCore.Qt.AlignCenter)
         self.vertLayout.addWidget(self.title)
         
-        font = QtGui.QFont(_fromUtf8("Helvetica Neue"), pointSize = 20)
+        font.setPointSize(20)
+        font.setBold(True)
         
         # create a grid layout for the game board
         self.gridLayoutWidget = QtGui.QWidget(self.vertLayoutWidget)
         self.gridLayoutWidget.setStyleSheet(_fromUtf8("QWidget { background: #776e65}"))
         self.vertLayout.addWidget(self.gridLayoutWidget)
+        
+        self.gridLayoutWidget.setFont(font)
+        self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
+        self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
+        self.gridLayout.setContentsMargins(50,50,50,50)
+        self.gridLayout.setSpacing(10)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         
         # create score board
         self.scoreboard = QtGui.QLabel(self.vertLayoutWidget)
@@ -68,121 +76,98 @@ class Ui_MainWindow(object):
         self.vertLayout.addWidget(self.scoreboard)
         
         # add QLabels into the Grid Layout to act as game tiles
-        self.gridLayoutWidget.setFont(font)
-        self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
-        self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
-        self.gridLayout.setContentsMargins(0, -1, -1, -1)
-        self.gridLayout.setSpacing(10)
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.lb14 = QtGui.QLabel(self.gridLayoutWidget)
-
         self.lb14.setFont(font)
-        self.lb14.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb14.setAlignment(QtCore.Qt.AlignCenter)
         self.lb14.setObjectName(_fromUtf8("lb14"))
         self.gridLayout.addWidget(self.lb14, 3, 2, 1, 1)
         self.lb15 = QtGui.QLabel(self.gridLayoutWidget)
 
         self.lb15.setFont(font)
-        self.lb15.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb15.setAlignment(QtCore.Qt.AlignCenter)
         self.lb15.setObjectName(_fromUtf8("lb15"))
         self.gridLayout.addWidget(self.lb15, 3, 3, 1, 1)
         self.lb12 = QtGui.QLabel(self.gridLayoutWidget)
 
         self.lb12.setFont(font)
-        self.lb12.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb12.setAlignment(QtCore.Qt.AlignCenter)
         self.lb12.setObjectName(_fromUtf8("lb12"))
         self.gridLayout.addWidget(self.lb12, 3, 0, 1, 1)
         
         self.lb2 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb2.setFont(font)
-        self.lb2.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb2.setAlignment(QtCore.Qt.AlignCenter)
         self.lb2.setObjectName(_fromUtf8("lb2"))
         self.gridLayout.addWidget(self.lb2, 0, 2, 1, 1)
         
         self.lb3 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb3.setFont(font)
-        self.lb3.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb3.setAlignment(QtCore.Qt.AlignCenter)
         self.lb3.setObjectName(_fromUtf8("lb3"))
         self.gridLayout.addWidget(self.lb3, 0, 3, 1, 1)
         
         self.lb11 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb11.setFont(font)
-        self.lb11.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb11.setAlignment(QtCore.Qt.AlignCenter)
         self.lb11.setObjectName(_fromUtf8("lb11"))
         self.gridLayout.addWidget(self.lb11, 2, 3, 1, 1)
         
         self.lb6 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb6.setFont(font)
-        self.lb6.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb6.setAlignment(QtCore.Qt.AlignCenter)
         self.lb6.setObjectName(_fromUtf8("lb6"))
         self.gridLayout.addWidget(self.lb6, 1, 2, 1, 1)
         
         self.lb10 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb10.setFont(font)
-        self.lb10.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb10.setAlignment(QtCore.Qt.AlignCenter)
         self.lb10.setObjectName(_fromUtf8("lb10"))
         self.gridLayout.addWidget(self.lb10, 2, 2, 1, 1)
         
         self.lb9 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb9.setFont(font)
-        self.lb9.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb9.setAlignment(QtCore.Qt.AlignCenter)
         self.lb9.setObjectName(_fromUtf8("lb9"))
         self.gridLayout.addWidget(self.lb9, 2, 1, 1, 1)
         
         self.lb8 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb8.setFont(font)
-        self.lb8.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb8.setAlignment(QtCore.Qt.AlignCenter)
         self.lb8.setObjectName(_fromUtf8("lb8"))
         self.gridLayout.addWidget(self.lb8, 2, 0, 1, 1)
         
         self.lb0 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb0.setFont(font)
-        self.lb0.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb0.setAlignment(QtCore.Qt.AlignCenter)
         self.lb0.setObjectName(_fromUtf8("lb0"))
         self.gridLayout.addWidget(self.lb0, 0, 0, 1, 1)
         
         self.lb7 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb7.setFont(font)
-        self.lb7.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb7.setAlignment(QtCore.Qt.AlignCenter)
         self.lb7.setObjectName(_fromUtf8("lb7"))
         self.gridLayout.addWidget(self.lb7, 1, 3, 1, 1)
         
         self.lb1 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb1.setFont(font)
-        self.lb1.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb1.setAlignment(QtCore.Qt.AlignCenter)
         self.lb1.setObjectName(_fromUtf8("lb1"))
         self.gridLayout.addWidget(self.lb1, 0, 1, 1, 1)
         
         self.lb4 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb4.setFont(font)
-        self.lb4.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb4.setAlignment(QtCore.Qt.AlignCenter)
         self.lb4.setObjectName(_fromUtf8("lb4"))
         self.gridLayout.addWidget(self.lb4, 1, 0, 1, 1)
         
         self.lb13 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb13.setFont(font)
-        self.lb13.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb13.setAlignment(QtCore.Qt.AlignCenter)
         self.lb13.setObjectName(_fromUtf8("lb13"))
         self.gridLayout.addWidget(self.lb13, 3, 1, 1, 1)
         
         self.lb5 = QtGui.QLabel(self.gridLayoutWidget)
         self.lb5.setFont(font)
-        self.lb5.setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
         self.lb5.setAlignment(QtCore.Qt.AlignCenter)
         self.lb5.setObjectName(_fromUtf8("lb5"))
         self.gridLayout.addWidget(self.lb5, 1, 1, 1, 1)
@@ -193,7 +178,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 804, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 20))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuMenu = QtGui.QMenu(self.menubar)
         self.menuMenu.setObjectName(_fromUtf8("menuMenu"))
@@ -259,11 +244,23 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         super(MyGui, self).__init__()
         self.setupUi(self)
         
-        # create a dictionary that will map directions
+        # create a dictionary that will map directions to their matrix directions
         self.direc = {'up': {'x' : 0, 'y' : -1}, 'right': {'x' : 1, 'y' : 0}, 'down': {'x' : 0, 'y' : 1}, 'left': {'x' : -1, 'y' : 0}}
         
         # another dictionary that will map values to colors
-        self.colorDict = { 2: '#eee4da', 4: '#ede0c8', 8: '#f2b179', 16: '#f59563', 32: '#f67c5f', 64: '#f65e3b', 128: '#edcf72', 256: '#edcc61', 512: '#edc850', 1024: '#edc53f', 2048: '#edc22e'  }
+        #self.colorDict = { 2: '#eee4da', 4: '#ede0c8', 8: '#f2b179', 16: '#f59563', 32: '#f67c5f', 64: '#f65e3b', 128: '#edcf72', 256: '#edcc61', 512: '#edc850', 1024: '#edc53f', 2048: '#edc22e'  }
+        self.colorDict = { 
+                2: {'background': '#eee4da', 'text' : '#776e65'},
+                4: {'background': '#ede0c8', 'text': '#776e65'}, 
+                8: {'background' : '#f2b179', 'text': '#f9f6f2'}, 
+                16: {'background': '#f59563', 'text': '#f9f6f2'}, 
+                32: {'background' : '#f67c5f', 'text' : '#f9f6f2'}, 
+                64: {'background' : '#f65e3b', 'text' : '#f9f6f2'}, 
+                128: {'background' : '#edcf72', 'text' : '#f9f6f2'}, 
+                256: {'background' : '#edcc61', 'text' : '#f9f6f2'}, 
+                512: {'background' : '#edc850', 'text' : '#f9f6f2'}, 
+                1024: {'background' : '#edc53f', 'text' : '#f9f6f2'}, 
+                2048: {'background' : '#edc22e', 'text' : '#f9f6f2'}}
         
         # create game
         self.initGame()
@@ -286,20 +283,20 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         while point1 == point2:
             point2 = (random.randint(0,3), random.randint(0,3))
             
-        self.score = 0
+        # add either 2 or 4 as starting blocks
         self.tiles[point1] = 2 if random.random() <= 0.60 else 4
         self.tiles[point2] = 2 if random.random() <= 0.60 else 4
-        self.score = max(self.tiles[point1], self.tiles[point2])
-        
         self.gridLayout.itemAtPosition(point1[0], point1[1]).widget().setText(_translate("MainWindow", str(self.tiles[point1[0], point1[1]]), None))
         self.gridLayout.itemAtPosition(point2[0], point2[1]).widget().setText(_translate("MainWindow", str(self.tiles[point2[0], point2[1]]), None))
+        
+        # set initial score
+        self.score = max(self.tiles[point1], self.tiles[point2])
+        self.scoreboard.setText('Score: ' + str(self.score))
         
         """Win/Lose scenarios for testing"""
 #        self.tiles = np.array([[2,  4,  8,  16], [ 4,  8,  16,  32], [8,  16,  32,  64,], [16,  32,  64,  0]])
 #        self.tiles[0, 0:2] = 2048
 #        self.lastMove = self.tiles
-        
-        self.scoreboard.setText('Score: ' + str(self.score))
         
         self.updateTiles()
         
@@ -312,11 +309,14 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
                     if self.tiles[i,j] > 2048:
                         color = 'QLabel { background:' + '#ffc1f7' + '}'
                     else:
-                        color = 'QLabel { background:' + str(self.colorDict[self.tiles[i,j]]) + '}'
+                        color = 'QLabel { background:' + str(self.colorDict[self.tiles[i,j]]['background']) + '; color:' + str(self.colorDict[self.tiles[i,j]]['text']) + '}'
                     self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet(_fromUtf8(color))
                 else:
                     self.gridLayout.itemAtPosition(i,j).widget().setText(_translate("MainWindow", "", None))
                     self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
+                    
+        # update score
+        self.scoreboard.setText('Score: ' + str(self.score))
         return
                 
     def addRandomTile(self):
@@ -335,7 +335,7 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         # place new tile
         self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]] = 2 if random.random() <= 0.50 else 4
         self.gridLayout.itemAtPosition(possibleLocation[0][choice],possibleLocation[1][choice]).widget().setText(_translate("MainWindow", str(self.tiles[possibleLocation[0][choice],possibleLocation[1][choice]]), None))
-        color = 'QLabel { background:' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]) + '}'
+        color = 'QLabel { background:' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]['background']) + '; color: ' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]['text']) + '}'
         self.gridLayout.itemAtPosition(possibleLocation[0][choice],possibleLocation[1][choice]).widget().setStyleSheet(_fromUtf8(color))
         
         if np.count_nonzero(self.tiles) == 16:
@@ -396,7 +396,6 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
                 
                 # update score
                 self.score = self.tiles[nextTile] if self.tiles[nextTile] > self.score else self.score
-                self.scoreboard.setText('Score: ' + str(self.score))
                 
                 if self.score == 2048 and not self.userWon:
                     self.userWon = True
@@ -417,7 +416,17 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
                     self.tiles[currTile] = 0
         
         self.updateTiles()
-        self.addRandomTile()
+        
+        # generate tile if valid move was made
+        # probably a better way to do this, but since there are only 16 comparisons to make, shouldn't be horrendous
+        validMove = False
+        for i in xrange(0, 4, 1):
+            for j in xrange(0, 4, 1):
+                if self.tiles[i, j] != self.lastMove[i, j]:
+                    validMove = True
+                    break
+        if validMove:    
+            self.addRandomTile()
         #print 'lastmove:\n', self.lastMove
     
     # create a method that checks if there are any moves left that will be called when there are 16 pieces on the board
@@ -437,18 +446,22 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
 
         # otherwise,
         return False
-         
+    
+    # To be called when user presses the reset button. Will bring user back to board before move made. Also works to undo resets.
     def undo(self):
         self.tiles = self.lastMove
+        self.score = np.amax(self.lastMove)
         self.updateTiles()
     
+    # displays the lose message box. Gives user option to either quit or retry
     def lose(self):
         retval = self.msg.exec_()
         if retval == 2097152:
             sys.exit(app.exec_())
         elif retval == 524288:
             self.initGame()
-        
+    
+    # win message box. Gives user option to either restart the game or continue
     def win(self):
         retval = self.winMsg.exec_()
         
@@ -458,7 +471,8 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         # otherwise, continue game as usual
         else:
             self.addRandomTile()
-        
+    
+    # catches key presses and interprets them as moves
     def keyPressEvent(self, key):
         self.lastMove = np.array(self.tiles)  
         if key.key() == QtCore.Qt.Key_Up:
