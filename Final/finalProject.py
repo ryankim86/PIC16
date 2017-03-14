@@ -50,6 +50,7 @@ class Ui_MainWindow(object):
         self.title.setFont(font)
         self.title.resize(QtCore.QSize(100,100))
         self.title.setAlignment(QtCore.Qt.AlignCenter)
+        self.title.setStyleSheet(_fromUtf8("QLabel{ color : #776e65}"))
         self.vertLayout.addWidget(self.title)
         
         font.setPointSize(20)
@@ -63,7 +64,7 @@ class Ui_MainWindow(object):
         self.gridLayoutWidget.setFont(font)
         self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
-        self.gridLayout.setContentsMargins(50,50,50,50)
+        self.gridLayout.setContentsMargins(50, 50, 50, 50)
         self.gridLayout.setSpacing(10)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         
@@ -73,6 +74,7 @@ class Ui_MainWindow(object):
         self.scoreboard.setFont(font)
         self.scoreboard.resize(QtCore.QSize(100,100))
         self.scoreboard.setAlignment(QtCore.Qt.AlignCenter)
+        self.scoreboard.setStyleSheet(_fromUtf8("QLabel{ color : '#776e65'}"))
         self.vertLayout.addWidget(self.scoreboard)
         
         # add QLabels into the Grid Layout to act as game tiles
