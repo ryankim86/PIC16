@@ -54,7 +54,6 @@ class Ui_MainWindow(object):
         self.scoreboard = QtGui.QLabel(self.vertLayoutWidget)
         self.scoreboard.setText('Score: 0')
         self.scoreboard.setFont(font)
-        #self.scoreboard.resize(QtCore.QSize(20,20))
         self.scoreboard.setMaximumHeight(50)
         self.scoreboard.setAlignment(QtCore.Qt.AlignCenter)
         self.scoreboard.setStyleSheet(_fromUtf8("QLabel{ color : '#776e65'}"))
@@ -63,7 +62,6 @@ class Ui_MainWindow(object):
         # create a grid layout for the game board
         self.gridLayoutWidget = QtGui.QWidget(self.vertLayoutWidget)
         self.vertLayout.addWidget(self.gridLayoutWidget)
-        
         self.gridLayoutWidget.setFont(font)
         self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
