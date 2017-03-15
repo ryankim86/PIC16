@@ -58,7 +58,6 @@ class Ui_MainWindow(object):
         
         # create a grid layout for the game board
         self.gridLayoutWidget = QtGui.QWidget(self.vertLayoutWidget)
-        self.gridLayoutWidget.setStyleSheet(_fromUtf8("QWidget { background: #776e65}"))
         self.vertLayout.addWidget(self.gridLayoutWidget)
         
         self.gridLayoutWidget.setFont(font)
@@ -215,6 +214,7 @@ class Ui_MainWindow(object):
                 self.gridLayout.itemAtPosition(i,j).widget().setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Raised)
                 self.gridLayout.itemAtPosition(i,j).widget().setLineWidth(3)
                 self.gridLayout.itemAtPosition(i,j).widget().setMidLineWidth(3)
+                self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet('QLabel {background: #eee4da; border: 1px solid #faf8ef; border-radius: 4px}')
         
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -311,11 +311,11 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
                     if self.tiles[i,j] > 2048:
                         color = 'QLabel { background:' + '#ffc1f7' + '}'
                     else:
-                        color = 'QLabel { background:' + str(self.colorDict[self.tiles[i,j]]['background']) + '; color:' + str(self.colorDict[self.tiles[i,j]]['text']) + '}'
+                        color = 'QLabel { background:' + str(self.colorDict[self.tiles[i,j]]['background']) + '; color:' + str(self.colorDict[self.tiles[i,j]]['text']) + '; border: 1px solid #faf8ef; border-radius: 4px' + '}'
                     self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet(_fromUtf8(color))
                 else:
                     self.gridLayout.itemAtPosition(i,j).widget().setText(_translate("MainWindow", "", None))
-                    self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet(_fromUtf8("QLabel { background: transparent}"))
+                    self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet(_fromUtf8("QLabel { background: #b2a392; border: 1px solid #faf8ef; border-radius: 4px }"))
                     
         # update score
         self.scoreboard.setText('Score: ' + str(self.score))
@@ -337,7 +337,7 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         # place new tile
         self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]] = 2 if random.random() <= 0.50 else 4
         self.gridLayout.itemAtPosition(possibleLocation[0][choice],possibleLocation[1][choice]).widget().setText(_translate("MainWindow", str(self.tiles[possibleLocation[0][choice],possibleLocation[1][choice]]), None))
-        color = 'QLabel { background:' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]['background']) + '; color: ' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]['text']) + '}'
+        color = 'QLabel { background:' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]['background']) + '; color: ' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]['text']) + ';border: 1px solid #faf8ef; border-radius: 4px' + '}'
         self.gridLayout.itemAtPosition(possibleLocation[0][choice],possibleLocation[1][choice]).widget().setStyleSheet(_fromUtf8(color))
         
         if np.count_nonzero(self.tiles) == 16:
