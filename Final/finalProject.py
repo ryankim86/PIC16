@@ -24,7 +24,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(600, 800)
+        MainWindow.resize(600, 700)
         
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setStyleSheet(_fromUtf8("QWidget { background: #faf8ef}")) 
@@ -33,21 +33,32 @@ class Ui_MainWindow(object):
         # create a vertical layout
         self.vertLayoutWidget = QtGui.QWidget(self.centralwidget)
         self.vertLayoutWidget.setGeometry(QtCore.QRect(0, 0, 600, 800))
+        self.vertLayoutWidget.setMaximumHeight(700)
+        self.vertLayoutWidget.setContentsMargins(25, 25, 25, 25)
         self.vertLayout = QtGui.QVBoxLayout(self.vertLayoutWidget)  
-        self.vertLayout.setSpacing(0)
         
         # create game title
         font = QtGui.QFont(_fromUtf8("Helvetica"), pointSize = 36)
         self.title = QtGui.QLabel(self.vertLayoutWidget)
         self.title.setText('2048')
         self.title.setFont(font)
-        self.title.resize(QtCore.QSize(100, 100))
+        self.title.setMaximumHeight(50)
         self.title.setAlignment(QtCore.Qt.AlignCenter)
         self.title.setStyleSheet(_fromUtf8("QLabel{ color : #776e65}"))
         self.vertLayout.addWidget(self.title)
         
         font.setPointSize(20)
         font.setBold(True)
+        
+        # create score board
+        self.scoreboard = QtGui.QLabel(self.vertLayoutWidget)
+        self.scoreboard.setText('Score: 0')
+        self.scoreboard.setFont(font)
+        #self.scoreboard.resize(QtCore.QSize(20,20))
+        self.scoreboard.setMaximumHeight(50)
+        self.scoreboard.setAlignment(QtCore.Qt.AlignCenter)
+        self.scoreboard.setStyleSheet(_fromUtf8("QLabel{ color : '#776e65'}"))
+        self.vertLayout.addWidget(self.scoreboard)
         
         # create a grid layout for the game board
         self.gridLayoutWidget = QtGui.QWidget(self.vertLayoutWidget)
@@ -59,15 +70,6 @@ class Ui_MainWindow(object):
         self.gridLayout.setContentsMargins(50, 50, 50, 50)
         self.gridLayout.setSpacing(10)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        
-        # create score board
-        self.scoreboard = QtGui.QLabel(self.vertLayoutWidget)
-        self.scoreboard.setText('Score: 0')
-        self.scoreboard.setFont(font)
-        self.scoreboard.resize(QtCore.QSize(100,100))
-        self.scoreboard.setAlignment(QtCore.Qt.AlignCenter)
-        self.scoreboard.setStyleSheet(_fromUtf8("QLabel{ color : '#776e65'}"))
-        self.vertLayout.addWidget(self.scoreboard)
         
         # add QLabels into the Grid Layout to act as game tiles (16)
         self.lb14 = QtGui.QLabel(self.gridLayoutWidget)
@@ -276,7 +278,8 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         self.gridLayout.itemAtPosition(point1[0], point1[1]).widget().setText(_translate("MainWindow", str(self.tiles[point1[0], point1[1]]), None))
         self.gridLayout.itemAtPosition(point2[0], point2[1]).widget().setText(_translate("MainWindow", str(self.tiles[point2[0], point2[1]]), None))
         
-        self.score = max(self.tiles[point1], self.tiles[point2])
+        self.score = 0
+        self.lastScore = self.score
         self.scoreboard.setText('Score: ' + str(self.score))
         
         """Win/Lose scenarios for testing"""
@@ -285,6 +288,7 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
 #        self.tiles[0, 3] = 16
                 
         self.updateTiles()
+        return
         
     """
     This function will take the values from the tile numpy array and have the GUI reflect those values.
@@ -413,7 +417,7 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
                 mergedTiles.append(nextTile)
                 
                 # update score
-                self.score = self.tiles[nextTile] if self.tiles[nextTile] > self.score else self.score
+                self.score += self.tiles[nextTile]
                 
                 # user won
                 if self.score == 2048 and not self.userWon:
@@ -481,7 +485,7 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
     """
     def undo(self):
         self.tiles = self.lastMove
-        self.score = np.amax(self.lastMove)
+        self.score = self.lastScore
         self.updateTiles()
         return
     
@@ -514,7 +518,12 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
     catches key presses and interprets them as moves
     """
     def keyPressEvent(self, key):
-        self.lastMove = np.array(self.tiles)  
+        
+        # store last move
+        self.lastMove = np.array(self.tiles)
+        self.lastScore = self.score
+        
+        # interpret key
         if key.key() == QtCore.Qt.Key_Up:
             self.moveTiles('up')
         elif key.key() == QtCore.Qt.Key_Right:
