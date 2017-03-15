@@ -281,7 +281,8 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         
         """Win/Lose scenarios for testing"""
 #        self.tiles = np.array([[2,  256,  8,  16], [ 4,  8,  1024,  32], [8,  16,  8,  2,], [512,  32,  64,  0]]) # lose
-#        self.tiles[0, 0:2] = 1024 # win
+#        self.tiles[0, 1:3] = 8 # win
+#        self.tiles[0, 3] = 16
                 
         self.updateTiles()
         
@@ -381,6 +382,9 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         # switch to leftmost or highest order depending on direction
         if  colMov == -1 or rowMov == -1:
             tileOrder.reverse()
+            
+        # tiles merged on this move
+        mergedTiles = []
         
         # iterate through the tiles to move
         for currTile in tileOrder:
@@ -401,9 +405,12 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
                 nextTile = (nextTile[0] + rowMov, nextTile[1] + colMov)
 
             # if two tiles with same value collide, add the values together
-            if self.tiles[currTile] == self.tiles[nextTile]:
+            if self.tiles[currTile] == self.tiles[nextTile] and nextTile not in mergedTiles:
                 self.tiles[nextTile] *= 2
                 self.tiles[currTile] = 0
+                
+                # mark that tile has been merged once
+                mergedTiles.append(nextTile)
                 
                 # update score
                 self.score = self.tiles[nextTile] if self.tiles[nextTile] > self.score else self.score
