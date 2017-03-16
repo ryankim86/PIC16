@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
         MainWindow.setFixedSize(600, 700)
         
         self.centralwidget = QtGui.QWidget(MainWindow)
-        self.centralwidget.setStyleSheet(_fromUtf8("QWidget { background: #faf8ef}")) 
+        self.centralwidget.setStyleSheet(_fromUtf8("QWidget { background: #faf8ef }")) 
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         
         font = QtGui.QFont(_fromUtf8("Helvetica"), pointSize = 20)
@@ -35,12 +35,12 @@ class Ui_MainWindow(object):
         
         # create a lose/win screen
         self.blankScreen = QtGui.QWidget(MainWindow)
-        self.blankScreen.setStyleSheet('QWidget{ background: #faf8ef}')
+        self.blankScreen.setStyleSheet('QWidget { background: #faf8ef }')
         self.blankScreen.setVisible(False)
         self.blankScreen.setFixedSize(600, 700)
         self.blankVertLayout = QtGui.QVBoxLayout(self.blankScreen)  
         self.winLose = QtGui.QLabel(self.blankScreen)
-        self.winLose.setStyleSheet('QLabel {color: #776e65}')
+        self.winLose.setStyleSheet('QLabel { color: #776e65 }')
         self.winLose.setFont(font)
         self.winLose.setAlignment(QtCore.Qt.AlignCenter)
         self.blankVertLayout.addWidget(self.winLose)
@@ -61,38 +61,39 @@ class Ui_MainWindow(object):
         self.title.setFont(font)
         self.title.setMaximumHeight(50)
         self.title.setAlignment(QtCore.Qt.AlignCenter)
-        self.title.setStyleSheet(_fromUtf8("QLabel{ color : #776e65}"))
+        self.title.setStyleSheet(_fromUtf8("QLabel { color : #776e65 }"))
         self.vertLayout.addWidget(self.title)
-        
-        font.setPointSize(20)
-        font.setBold(True)
         
         # create score board and reset/undo buttons. Put in horizontal layout
         self.controlsWidget = QtGui.QWidget(self.vertLayoutWidget)
         self.controlsLayout = QtGui.QHBoxLayout(self.controlsWidget)
         self.controlsWidget.setMaximumHeight(50)
-        #self.controlsLayout.setSpacing(1)
         
-        # undo/reset button
+        # undo/reset buttons
         self.undoButton = QtGui.QPushButton(self.controlsWidget)
         self.undoButton.setText('undo')
         self.resetButton = QtGui.QPushButton(self.controlsWidget)
         self.resetButton.setText('reset')
         self.undoButton.setMaximumSize(50, 50)
         self.resetButton.setMaximumSize(50, 50)
-        self.undoButton.setStyleSheet(_fromUtf8("QPushButton{ background: #b2a392; color : #faf8ef; border-radius: 4px; border-color: #faf8ef}"))
-        self.resetButton.setStyleSheet(_fromUtf8("QPushButton{ background: #b2a392; color : #faf8ef; border-radius: 4px; border-color: #faf8ef}"))
-	self.undoButton.setFocusPolicy(QtCore.Qt.NoFocus)
-	self.resetButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.undoButton.setStyleSheet(_fromUtf8("QPushButton { background: #b2a392; color : #faf8ef; border-radius: 4px; border-color: #faf8ef }"))
+        self.resetButton.setStyleSheet(_fromUtf8("QPushButton { background: #b2a392; color : #faf8ef; border-radius: 4px; border-color: #faf8ef }"))
+        self.undoButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.resetButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        font.setPointSize(12)
+        font.setBold(True)
+        self.undoButton.setFont(font)
+        self.resetButton.setFont(font)
         self.controlsLayout.addWidget(self.undoButton)
-
-        # score
+        
+        # display score
         self.scoreboard = QtGui.QLabel(self.vertLayoutWidget)
         self.scoreboard.setText('Score: 0')
+        font.setPointSize(20)
         self.scoreboard.setFont(font)
         self.scoreboard.setMaximumHeight(50)
         self.scoreboard.setAlignment(QtCore.Qt.AlignCenter)
-        self.scoreboard.setStyleSheet(_fromUtf8("QLabel{ color : #776e65}"))
+        self.scoreboard.setStyleSheet(_fromUtf8("QLabel { color : #776e65 }"))
         self.controlsLayout.addWidget(self.scoreboard)
         self.controlsLayout.addWidget(self.resetButton)
         
@@ -216,7 +217,7 @@ class Ui_MainWindow(object):
             for j in xrange(4):
                 self.gridLayout.itemAtPosition(i,j).widget().setMaximumSize(QtCore.QSize(100,100))
                 self.gridLayout.itemAtPosition(i,j).widget().setMinimumSize(QtCore.QSize(100,100))
-                self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet('QLabel {background: #eee4da; border: 1px solid #faf8ef; border-radius: 4px}')
+                self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet('QLabel { background: #eee4da; border: 1px solid #faf8ef; border-radius: 4px }')
         
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -265,7 +266,7 @@ class game2048(QtGui.QMainWindow,Ui_MainWindow):
     def initGame(self):
         self.userWon = False
         self.userLost = False
-        
+
          # create a matrix that will store the values of the tiles behind the GUI
         self.tiles = np.zeros((4,4), dtype = np.int)
 
@@ -278,22 +279,17 @@ class game2048(QtGui.QMainWindow,Ui_MainWindow):
             point2 = (random.randint(0,3), random.randint(0,3))
             
         # add either 2 or 4 as starting blocks
-        self.tiles[point1] = 2 if random.random() <= 0.60 else 4
-        self.tiles[point2] = 2 if random.random() <= 0.60 else 4
+        self.tiles[point1] = 2 if random.random() <= 0.90 else 4
+        self.tiles[point2] = 2 if random.random() <= 0.90 else 4
         self.gridLayout.itemAtPosition(point1[0], point1[1]).widget().setText(_translate("MainWindow", str(self.tiles[point1[0], point1[1]]), None))
         self.gridLayout.itemAtPosition(point2[0], point2[1]).widget().setText(_translate("MainWindow", str(self.tiles[point2[0], point2[1]]), None))
-        
+
         self.score = 0
         self.lastScore = self.score
         self.scoreboard.setText('Score: ' + str(self.score))
         
-        """Win/Lose scenarios for testing"""
-#        self.tiles = np.array([[2,  256,  8,  16], [ 4,  8,  1024,  32], [8,  16,  8,  2,], [512,  32,  64,  0]]) # lose
-#        self.tiles[0, 1:3] = 1024 # win
-#        self.tiles[0, 3] = 16
-#	self.tiles = np.array([[0,  0,  8,  16], [ 4,  8,  1024,  32], [8,  0,  8,  2,], [512,  2,  64,  0]]) 
-                
         self.updateTiles()
+        
         return
         
     """
@@ -351,10 +347,7 @@ class game2048(QtGui.QMainWindow,Ui_MainWindow):
         choice = random.randint(0,len(possibleLocation[0])-1)
         
         # place new tile
-        self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]] = 2 if random.random() <= 0.60 else 4
-        self.gridLayout.itemAtPosition(possibleLocation[0][choice],possibleLocation[1][choice]).widget().setText(_translate("MainWindow", str(self.tiles[possibleLocation[0][choice],possibleLocation[1][choice]]), None))
-        color = 'QLabel { background:' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]['background']) + '; color: ' + str(self.colorDict[self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]]]['text']) + ';border: 1px solid #faf8ef; border-radius: 4px' + '}'
-        self.gridLayout.itemAtPosition(possibleLocation[0][choice],possibleLocation[1][choice]).widget().setStyleSheet(_fromUtf8(color))
+        self.tiles[possibleLocation[0][choice], possibleLocation[1][choice]] = 2 if random.random() <= 0.90 else 4
         
         # check if user lost
         if np.count_nonzero(self.tiles) == 16:
@@ -368,9 +361,10 @@ class game2048(QtGui.QMainWindow,Ui_MainWindow):
     This is where most of the game logic is performed.
     """
     def moveTiles(self, direction):
-        
+
         colMov = self.direc[direction]['x']
         rowMov = self.direc[direction]['y']
+        validMove = False
 
         # build stack of positions to travel in the correct order
         tileOrder = []
@@ -416,6 +410,7 @@ class game2048(QtGui.QMainWindow,Ui_MainWindow):
 
             # if two tiles with same value collide, add the values together
             if self.tiles[currTile] == self.tiles[nextTile] and nextTile not in mergedTiles:
+                validMove = True
                 self.tiles[nextTile] *= 2
                 self.tiles[currTile] = 0
                 
@@ -441,22 +436,16 @@ class game2048(QtGui.QMainWindow,Ui_MainWindow):
                 # change value
                 self.tiles[nextTile] = self.tiles[currTile]
 
-                # to prevent tiles from being erased if they don't move
+                # only erase if currTile moved
                 if currTile != nextTile:
+                    validMove = True
                     self.tiles[currTile] = 0
         
-        self.updateTiles()
-        
-        # generate new tile only if valid move was made. There's probably a better way to check, but since there are only at most 16 comparisons to make, shouldn't be horrendous
-        validMove = False
-        for i in xrange(0, 4, 1):
-            for j in xrange(0, 4, 1):
-                if self.tiles[i, j] != self.lastMove[i, j]:
-                    validMove = True
-                    break
         if validMove:    
             self.addRandomTile()
-        
+            
+        self.updateTiles()
+
         return
     
     """
@@ -474,7 +463,7 @@ class game2048(QtGui.QMainWindow,Ui_MainWindow):
                     
                     nextTile = (tile[0] + self.direc[direction]['y'], tile[1] + self.direc[direction]['x'])
                     
-                    # ignore tiles on the edge
+                    # ignore tiles past the edge
                     if nextTile[0] > 3 or nextTile[0] < 0 or nextTile[1] > 3 or nextTile[1] < 0:
                         continue
                     
@@ -537,12 +526,14 @@ class game2048(QtGui.QMainWindow,Ui_MainWindow):
             if self.userWon and self.blankScreen.isVisible():
                 self.blankScreen.setVisible(False)
                 self.addRandomTile()
+                self.updateTiles()
         elif key.key() == QtCore.Qt.Key_X:
             if self.userLost and self.blankScreen.isVisible():
                 QtGui.QApplication.quit()
         elif key.key() == QtCore.Qt.Key_R and self.blankScreen.isVisible():
             self.initGame()
             self.blankScreen.setVisible(False)
+            
         return
 
 if __name__ == '__main__':
