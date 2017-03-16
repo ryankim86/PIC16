@@ -24,11 +24,27 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(600, 700)
+        MainWindow.setFixedSize(600, 700)
         
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setStyleSheet(_fromUtf8("QWidget { background: #faf8ef}")) 
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+        
+        font = QtGui.QFont(_fromUtf8("Helvetica"), pointSize = 20)
+        font.setBold(True)
+        
+        # create a lose/win screen
+        self.blankScreen = QtGui.QWidget(MainWindow)
+        self.blankScreen.setStyleSheet('QWidget{ background: #faf8ef}')
+        self.blankScreen.setVisible(False)
+        self.blankScreen.setFixedSize(600, 700)
+        self.blankVertLayout = QtGui.QVBoxLayout(self.blankScreen)  
+        self.winLose = QtGui.QLabel(self.blankScreen)
+        self.winLose.setStyleSheet('QLabel {color: #776e65}')
+        self.winLose.setFont(font)
+        self.winLose.setAlignment(QtCore.Qt.AlignCenter)
+        self.blankVertLayout.addWidget(self.winLose)
+        self.winLose.setVisible(True)
         
         # create a vertical layout
         self.vertLayoutWidget = QtGui.QWidget(self.centralwidget)
@@ -38,7 +54,8 @@ class Ui_MainWindow(object):
         self.vertLayout = QtGui.QVBoxLayout(self.vertLayoutWidget)  
         
         # create game title
-        font = QtGui.QFont(_fromUtf8("Helvetica"), pointSize = 36)
+        font.setPointSize(36)
+        font.setBold(False)
         self.title = QtGui.QLabel(self.vertLayoutWidget)
         self.title.setText('2048')
         self.title.setFont(font)
@@ -50,14 +67,36 @@ class Ui_MainWindow(object):
         font.setPointSize(20)
         font.setBold(True)
         
-        # create score board
+        # create score board and reset/undo buttons. Put in horizontal layout
+        self.controlsWidget = QtGui.QWidget(self.vertLayoutWidget)
+        self.controlsLayout = QtGui.QHBoxLayout(self.controlsWidget)
+        self.controlsWidget.setMaximumHeight(50)
+        #self.controlsLayout.setSpacing(1)
+        
+        # undo/reset button
+        self.undoButton = QtGui.QPushButton(self.controlsWidget)
+        self.undoButton.setText('undo')
+        self.resetButton = QtGui.QPushButton(self.controlsWidget)
+        self.resetButton.setText('reset')
+        self.undoButton.setMaximumSize(50, 50)
+        self.resetButton.setMaximumSize(50, 50)
+        self.undoButton.setStyleSheet(_fromUtf8("QPushButton{ background: #b2a392; color : #faf8ef; border-radius: 4px; border-color: #faf8ef}"))
+        self.resetButton.setStyleSheet(_fromUtf8("QPushButton{ background: #b2a392; color : #faf8ef; border-radius: 4px; border-color: #faf8ef}"))
+	self.undoButton.setFocusPolicy(QtCore.Qt.NoFocus)
+	self.resetButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.controlsLayout.addWidget(self.undoButton)
+
+        # score
         self.scoreboard = QtGui.QLabel(self.vertLayoutWidget)
         self.scoreboard.setText('Score: 0')
         self.scoreboard.setFont(font)
         self.scoreboard.setMaximumHeight(50)
         self.scoreboard.setAlignment(QtCore.Qt.AlignCenter)
-        self.scoreboard.setStyleSheet(_fromUtf8("QLabel{ color : '#776e65'}"))
-        self.vertLayout.addWidget(self.scoreboard)
+        self.scoreboard.setStyleSheet(_fromUtf8("QLabel{ color : #776e65}"))
+        self.controlsLayout.addWidget(self.scoreboard)
+        self.controlsLayout.addWidget(self.resetButton)
+        
+        self.vertLayout.addWidget(self.controlsWidget)
         
         # create a grid layout for the game board
         self.gridLayoutWidget = QtGui.QWidget(self.vertLayoutWidget)
@@ -171,42 +210,12 @@ class Ui_MainWindow(object):
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
-        self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 20))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        self.menuMenu = QtGui.QMenu(self.menubar)
-        self.menuMenu.setObjectName(_fromUtf8("menuMenu"))
-        MainWindow.setMenuBar(self.menubar)
-        self.actionReset = QtGui.QAction(MainWindow)
-        self.actionReset.setObjectName(_fromUtf8("actionReset"))
-        self.actionUndo = QtGui.QAction(MainWindow)
-        self.actionUndo.setObjectName(_fromUtf8("actionUndo"))
-        self.menuMenu.addAction(self.actionReset)
-        self.menuMenu.addAction(self.actionUndo)
-        self.menubar.addAction(self.menuMenu.menuAction())
-        
-        # message box to tell user that they lost
-        self.msg = QtGui.QMessageBox()
-        self.msg.setIcon(QtGui.QMessageBox.Critical)
-        self.msg.setWindowTitle('You Lost!')
-        self.msg.setText('You Lost! Press Retry to try again!')
-        self.msg.setStandardButtons(QtGui.QMessageBox.Retry | QtGui.QMessageBox.Close)
-        
-        # message box to tell user that they won
-        self.winMsg = QtGui.QMessageBox()
-        self.winMsg.setIcon(QtGui.QMessageBox.Question)
-        self.winMsg.setWindowTitle('Congratulations!')
-        self.winMsg.setText('You made it to 2048. Would you like to continue?')
-        self.winMsg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.Retry)
         
         # adjust all text labels
         for i in xrange(4):
             for j in xrange(4):
                 self.gridLayout.itemAtPosition(i,j).widget().setMaximumSize(QtCore.QSize(100,100))
                 self.gridLayout.itemAtPosition(i,j).widget().setMinimumSize(QtCore.QSize(100,100))
-                #self.gridLayout.itemAtPosition(i,j).widget().setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Raised)
-                #self.gridLayout.itemAtPosition(i,j).widget().setLineWidth(3)
-                #self.gridLayout.itemAtPosition(i,j).widget().setMidLineWidth(3)
                 self.gridLayout.itemAtPosition(i,j).widget().setStyleSheet('QLabel {background: #eee4da; border: 1px solid #faf8ef; border-radius: 4px}')
         
         self.retranslateUi(MainWindow)
@@ -214,13 +223,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "2048", None))
-        self.menuMenu.setTitle(_translate("MainWindow", "Menu", None))
-        self.actionReset.setText(_translate("MainWindow", "Reset", None))
-        self.actionUndo.setText(_translate("MainWindow", "Undo", None))
         
-class MyGui(QtGui.QMainWindow,Ui_MainWindow):
+class game2048(QtGui.QMainWindow,Ui_MainWindow):
     def __init__(self, ):
-        super(MyGui, self).__init__()
+        super(game2048, self).__init__()
         self.setupUi(self)
         
         # create a dictionary that will map directions to their matrix directions
@@ -248,8 +254,8 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         self.initGame()
         
         # connect signals so that we can undo moves or reset
-        self.actionUndo.triggered.connect(self.undo)
-        self.actionReset.triggered.connect(self.initGame)
+        self.undoButton.clicked.connect(self.undo)
+        self.resetButton.clicked.connect(self.initGame)
     
     """
     Initialize game board. Called whenever a new game is started.
@@ -258,6 +264,7 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
     """
     def initGame(self):
         self.userWon = False
+        self.userLost = False
         
          # create a matrix that will store the values of the tiles behind the GUI
         self.tiles = np.zeros((4,4), dtype = np.int)
@@ -282,8 +289,9 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         
         """Win/Lose scenarios for testing"""
 #        self.tiles = np.array([[2,  256,  8,  16], [ 4,  8,  1024,  32], [8,  16,  8,  2,], [512,  32,  64,  0]]) # lose
-#        self.tiles[0, 1:3] = 8 # win
+#        self.tiles[0, 1:3] = 1024 # win
 #        self.tiles[0, 3] = 16
+#	self.tiles = np.array([[0,  0,  8,  16], [ 4,  8,  1024,  32], [8,  0,  8,  2,], [512,  2,  64,  0]]) 
                 
         self.updateTiles()
         return
@@ -488,40 +496,33 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
         return
     
     """
-    displays the lose message box. Gives user option to either quit or retry
+    displays the lose message. Gives user option to either quit or retry
     """
     def lose(self):
-        retval = self.msg.exec_()
-        if retval == 2097152:
-            QtGui.QApplication.quit()
-        elif retval == 524288:
-            self.initGame()
+        self.winLose.setText('you lost. press r to retry or x to exit')
+        self.blankScreen.setVisible(True)
+        self.userLost = True
         return
     
     """ 
-    win message box. Gives user option to either restart the game or continue
+    win message. Gives user option to either restart the game or continue
     """
     def win(self):
-        retval = self.winMsg.exec_()
-        
-        # reset game if user chooses to restart
-        if retval == 524288:
-            self.initGame()
-        # otherwise, continue game as usual
-        else:
-            self.addRandomTile()
+        self.winLose.setText('you won! press c to continue or r to retry')
+        self.blankScreen.setVisible(True)
         return
     
     """
     catches key presses and interprets them as moves
     """
     def keyPressEvent(self, key):
-        
+
         # store last move
-        self.lastMove = np.array(self.tiles)
-        self.lastScore = self.score
+        if not self.blankScreen.isVisible():
+            self.lastMove = np.array(self.tiles)
+            self.lastScore = self.score
         
-        # interpret key
+        # interpret key for board moves
         if key.key() == QtCore.Qt.Key_Up:
             self.moveTiles('up')
         elif key.key() == QtCore.Qt.Key_Right:
@@ -530,6 +531,18 @@ class MyGui(QtGui.QMainWindow,Ui_MainWindow):
             self.moveTiles('down')
         elif key.key() == QtCore.Qt.Key_Left:
             self.moveTiles('left')
+        
+        # win/lose scenarios
+        elif key.key() == QtCore.Qt.Key_C:
+            if self.userWon and self.blankScreen.isVisible():
+                self.blankScreen.setVisible(False)
+                self.addRandomTile()
+        elif key.key() == QtCore.Qt.Key_X:
+            if self.userLost and self.blankScreen.isVisible():
+                QtGui.QApplication.quit()
+        elif key.key() == QtCore.Qt.Key_R and self.blankScreen.isVisible():
+            self.initGame()
+            self.blankScreen.setVisible(False)
         return
 
 if __name__ == '__main__':
@@ -539,6 +552,6 @@ if __name__ == '__main__':
     import sys
  
     app = QtGui.QApplication(sys.argv)
-    main = MyGui()
+    main = game2048()
     main.show()
     sys.exit(app.exec_())
