@@ -3,6 +3,7 @@
 Created on Sat Jan 21 12:45:05 2017
 
 @author: Ryan Kim
+@title: homework 2
 """
 
 def mytype(theInput):
